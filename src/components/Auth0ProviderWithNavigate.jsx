@@ -35,7 +35,13 @@ const Auth0ProviderWithNavigate = ({ children }) => {
         scope: 'openid profile email',
       }}
       onRedirectCallback={onRedirectCallback}
-      cacheLocation="localstorage"
+      // Tokens stay in memory instead of localStorage, where any XSS could read
+      // them. Sessions survive reloads through rotating refresh tokens; this
+      // needs "Allow Offline Access" on the API and "Refresh Token Rotation" on
+      // the application in the Auth0 dashboard. Until those are on, the
+      // fallback keeps silent auth working via the legacy iframe flow.
+      useRefreshTokens
+      useRefreshTokensFallback
     >
       {children}
     </Auth0Provider>
