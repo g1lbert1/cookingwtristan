@@ -25,7 +25,10 @@ export default function CreateRecipe() {
         instructions: [""]
     });
 
-    const [createRecipe] = useMutation(CREATE_RECIPE);
+    const [createRecipe, { loading: submitting }] = useMutation(CREATE_RECIPE);
+    //Surfaced in the form. Before this, a FORBIDDEN or network error went only
+    //to console.error and the user saw nothing happen.
+    const [status, setStatus] = useState(null); // { kind: "success" | "error", message }
 
     // INGREDIENT HANDLERS
     // -------------------------
@@ -83,6 +86,7 @@ export default function CreateRecipe() {
     //-------------
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setStatus(null);
 
         const formattedRecipe = {
             title: recipe.title.trim(),
@@ -104,13 +108,16 @@ export default function CreateRecipe() {
         };
 
         try {
-            await createRecipe({
+            const { data } = await createRecipe({
                 variables: {
                     input: formattedRecipe
                 }
             });
 
-            alert("Recipe created!");
+            setStatus({
+                kind: "success",
+                message: `Created "${data.createRecipe.title}" at /recipes/${data.createRecipe.slug}`
+            });
 
             setRecipe({
                 title: "",
@@ -122,7 +129,14 @@ export default function CreateRecipe() {
                 instructions: [""]
             });
         } catch (err) {
-            console.error(err);
+            //Apollo wraps GraphQL errors; the first one carries the server's
+            //BAD_USER_INPUT / FORBIDDEN message, which is what the user needs.
+            const graphQLMessage = err.graphQLErrors?.[0]?.message
+                ?? err.cause?.errors?.[0]?.message;
+            setStatus({
+                kind: "error",
+                message: graphQLMessage || err.message || "Something went wrong."
+            });
         }
     };
 
@@ -279,9 +293,18 @@ export default function CreateRecipe() {
             <br />
 
             {/* SUBMIT */}
-            <button type="submit">
-                Create Recipe
+            <button type="submit" disabled={submitting}>
+                {submitting ? "Creating..." : "Create Recipe"}
             </button>
+
+            {status && (
+                <p
+                    role={status.kind === "error" ? "alert" : "status"}
+                    className={status.kind === "error" ? "text-red-600" : "text-green-700"}
+                >
+                    {status.message}
+                </p>
+            )}
         </form>
     );
     
