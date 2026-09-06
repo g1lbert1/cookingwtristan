@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Recipe from './pages/Recipe';
 import Recipes from './pages/Recipes';
@@ -28,6 +27,21 @@ const ProtectedCreateRecipe =
     },
   });
 
+//Only the greeting depends on GET_ME, so a failure there is rendered in place
+//instead of replacing the whole page. The nav and routes always mount.
+const Greeting = ({ authLoading, apolloLoading, error, isAuthenticated, me }) => {
+  if(authLoading || apolloLoading) return <p>Loading...</p>;
+  if(error && isAuthenticated){
+    return (
+      <p className="text-red-600">
+        Couldn't load your profile: {error.message}
+      </p>
+    );
+  }
+  if(isAuthenticated && me) return <h1>Welcome back {me.username}!</h1>;
+  return <h1>Please log in.</h1>;
+};
+
 const App = () => {
   const {
     isLoading: authLoading,
@@ -37,19 +51,19 @@ const App = () => {
   const { data, loading: apolloLoading, error } = useQuery(GET_ME, {
     skip: authLoading || !isAuthenticated,
   });
-  if(authLoading || apolloLoading) return <div>Loading...</div>
-  if(error && isAuthenticated) return "ERROR Loading User Data";
 
   return(
     <>
       <NavBar />
       <main className="max-w-7xl mx-auto p-6">
         <div>
-          {isAuthenticated && data?.me ? (
-            <h1>Welcome back {data.me.username}!</h1>
-          ) : (
-            <h1>Please log in.</h1>
-          )}
+          <Greeting
+            authLoading={authLoading}
+            apolloLoading={apolloLoading}
+            error={error}
+            isAuthenticated={isAuthenticated}
+            me={data?.me}
+          />
           <Routes>
             <Route path = "/" element={<Landing />} />
             <Route path = "/recipes" element={<Recipes />} />
@@ -62,4 +76,3 @@ const App = () => {
   );
 };
 export default App;
-
