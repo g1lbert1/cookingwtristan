@@ -17,3 +17,18 @@
     * Lowkey need to work on redirecting/email verification when a user CREATES an account using auth0. since when they first create an account, it responds with ERROR getting user data
     * make sure you make a .env file and move hardcoded stuff out of there!
 
+
+### Setup
+```
+cp .env.example .env
+npm install
+npm run dev
+```
+
+Auth0 config now comes from `VITE_*` env vars instead of being hardcoded in
+`main.jsx`. Note that Vite **inlines these into the client bundle** — they are
+public by design (an Auth0 domain and clientId are meant to be), so never put a
+real secret behind a `VITE_` prefix.
+
+The "ERROR getting user data" on account creation was a backend issue — see the
+Required Auth0 Action section in the cookingwdatabase README.

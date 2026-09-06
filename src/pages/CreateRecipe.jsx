@@ -31,7 +31,8 @@ export default function CreateRecipe() {
     // -------------------------
     const updateIngredient = (index, field, value) => {
         const updated = [...recipe.ingredients];
-        updated[index][field] = value;
+        //Replace the row rather than mutating the object still held in state.
+        updated[index] = { ...updated[index], [field]: value };
 
         setRecipe({ ...recipe, ingredients: updated });
     };

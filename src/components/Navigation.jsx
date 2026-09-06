@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 const Navigation = () => {
   const { 
     isAuthenticated, 
-    user, 
     loginWithRedirect: login, 
     logout: auth0Logout } = useAuth0();
   const signup = () =>
@@ -26,7 +25,10 @@ const Navigation = () => {
         {isAuthenticated ? (
           <button onClick={logout} className="text-red px-4 py-2">Logout</button>
         ) : (
-          <button onClick={login} className="text-green px-4 py-2">Login</button>
+          <>
+            <button onClick={login} className="text-green px-4 py-2">Login</button>
+            <button onClick={signup} className="text-green px-4 py-2">Sign Up</button>
+          </>
         )}
       </div>
     </nav>
