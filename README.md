@@ -93,3 +93,20 @@ Required Auth0 Action section in the cookingwdatabase README.
   `consent_required`, `interaction_required`, `missing_refresh_token` or
   `invalid_grant`, returning to the page they were on. The profile page also
   keeps its log-out button when loading fails.
+
+### Recipe page (09/07/26)
+* `/recipes/:slug` is a blog-style page on a full-bleed navy background
+  (`#001357`) with white text. It shows the title, prep time, ingredient and
+  step counts, a placeholder for a photo of the finished dish, the description
+  as an intro, then ingredients beside numbered instructions. Admins get an
+  Edit link.
+* Amounts render as fractions where they fit (0.5 -> ½, 1.5 -> 1½) and units
+  as short labels (GRAMS -> g, TABLESPOONS -> tbsp). Both maps live at the top
+  of `src/pages/Recipe.jsx`.
+* Photos come from `src/recipeImages.js`, a slug -> path map. Drop the file
+  in `public/` named after the slug and add one line to the map. Recipes
+  without an entry show a dashed placeholder. This is a stopgap until the
+  schema has an image field.
+* Routing: pages that want the centered light layout sit under a `Contained`
+  layout route in `App.jsx`; the recipe page is registered outside it so it
+  can paint its own background.
