@@ -40,7 +40,56 @@ Required Auth0 Action section in the cookingwdatabase README.
 * The create form shows the server's error message inline (validation,
   FORBIDDEN, network) and a success line with the new slug; no more silent
   failures or `alert()`.
-* Auth0 tokens are held in memory with rotating refresh tokens instead of
-  localStorage. For sessions to survive a reload without the iframe fallback,
-  enable **Allow Offline Access** on the API and **Refresh Token Rotation** on
-  the SPA application in the Auth0 dashboard.
+* Auth0 uses rotating refresh tokens. Enable **Allow Offline Access** on the
+  API and **Refresh Token Rotation** on the SPA application in the Auth0
+  dashboard so expired access tokens renew without the iframe flow.
+  (Tokens were briefly moved to an in-memory cache; see the 09/07/26 fix
+  below for why that was reverted to localStorage.)
+
+### Landing, recipe list, nav (09/07/26)
+* Nav bar is now Home (top left), Profile (right), and an About-me person
+  icon (far right). Profile shows as "Log in" until there's a session.
+* `/` is the landing page and renders the recipe list from the `recipes`
+  query. `/recipes` redirects to `/` so old links keep working.
+* New `/profile` (login required) shows username, email, role, join date,
+  a log-out button, and a "Create a recipe" link for admins.
+* New `/about` placeholder page. Replace the copy in `src/pages/About.jsx`.
+* Shared queries live in `src/graphql/queries.js`.
+
+### Login fixes (09/07/26)
+* **Profile showed "User must be logged in" right after login.** Auth0 sends
+  you back to `/`, where the landing page fires the recipes query while the
+  login callback is still being processed. That asked the SDK for a token with
+  an empty cache, so it tried the hidden-iframe check, got `login_required`
+  (browser blocks third-party cookies), and the SDK wiped its token cache,
+  including the token the login had just stored. The Apollo auth link now only
+  asks for a token once Auth0 reports a signed-in user, and it warns in the
+  console if a token cannot be produced.
+* **Consent screen on every refresh.** With the in-memory token cache, every
+  reload started empty and hit the same failing iframe check, so
+  `withAuthenticationRequired` sent you through a full login each time. Tokens
+  are back in `localStorage`. Note that Auth0 always shows the consent screen
+  for `localhost` callback URLs, so it will still appear on real logins in dev;
+  it goes away on a deployed hostname.
+
+### Edit / delete UI (09/07/26)
+* Admins see **Edit** and **Delete** on each card on the landing page, plus a
+  **+ New recipe** button above the list.
+* `/admin/editRecipe/:slug` loads the recipe and reuses the create form.
+  Saving a new title changes the slug and the page follows it. A delete
+  section sits at the bottom of the edit page.
+* Delete is a two-step inline confirmation (no browser dialog). On success the
+  recipe is evicted from the Apollo cache so it disappears from the list
+  without a refetch.
+* The form lives in `src/components/RecipeForm.jsx`; create and edit pages
+  only own their mutation. Error text comes from `src/graphql/errors.js`.
+* `useMe()` in `src/hooks/useMe.js` is the one place that reads the signed-in
+  user's role.
+* **"Consent required" / stale session in another browser.** A browser that
+  logged in before refresh tokens were enabled has a token cache without the
+  `offline_access` scope. The SDK still reports a user, so the UI looks signed
+  in, but no token can be produced silently. The Apollo link now sends the
+  user through a fresh login when the SDK reports `login_required`,
+  `consent_required`, `interaction_required`, `missing_refresh_token` or
+  `invalid_grant`, returning to the page they were on. The profile page also
+  keeps its log-out button when loading fails.
