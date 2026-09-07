@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import NavBar from './components/Navigation';
 import Landing from './pages/Landing';
@@ -40,26 +40,36 @@ const ProtectedEditRecipe = withAuthenticationRequired(() => (
 
 const ProtectedProfile = withAuthenticationRequired(Profile);
 
+//Most pages sit in a centered column on the light background. The recipe
+//page opts out and paints its own full-bleed background.
+const Contained = () => (
+  <div className="mx-auto w-full max-w-7xl p-6">
+    <Outlet />
+  </div>
+);
+
 const App = () => {
   //Warms the Apollo cache once the session is known, so Profile, the admin
   //guard, and the list's admin controls all render from cache.
   useMe();
 
   return(
-    <>
+    <div className="flex min-h-screen flex-col">
       <NavBar />
-      <main className="mx-auto max-w-7xl p-6">
+      <main className="flex flex-1 flex-col">
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/recipes" element={<Recipes />} />
+          <Route element={<Contained />}>
+            <Route path="/" element={<Landing />} />
+            <Route path="/recipes" element={<Recipes />} />
+            <Route path="/profile" element={<ProtectedProfile />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/admin/createRecipe" element={<ProtectedCreateRecipe />} />
+            <Route path="/admin/editRecipe/:slug" element={<ProtectedEditRecipe />} />
+          </Route>
           <Route path="/recipes/:slug" element={<Recipe />} />
-          <Route path="/profile" element={<ProtectedProfile />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/admin/createRecipe" element={<ProtectedCreateRecipe />} />
-          <Route path="/admin/editRecipe/:slug" element={<ProtectedEditRecipe />} />
         </Routes>
       </main>
-    </>
+    </div>
   );
 };
 export default App;
