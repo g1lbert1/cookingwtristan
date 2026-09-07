@@ -40,7 +40,34 @@ Required Auth0 Action section in the cookingwdatabase README.
 * The create form shows the server's error message inline (validation,
   FORBIDDEN, network) and a success line with the new slug; no more silent
   failures or `alert()`.
-* Auth0 tokens are held in memory with rotating refresh tokens instead of
-  localStorage. For sessions to survive a reload without the iframe fallback,
-  enable **Allow Offline Access** on the API and **Refresh Token Rotation** on
-  the SPA application in the Auth0 dashboard.
+* Auth0 uses rotating refresh tokens. Enable **Allow Offline Access** on the
+  API and **Refresh Token Rotation** on the SPA application in the Auth0
+  dashboard so expired access tokens renew without the iframe flow.
+  (Tokens were briefly moved to an in-memory cache; see the 09/07/26 fix
+  below for why that was reverted to localStorage.)
+
+### Landing, recipe list, nav (09/07/26)
+* Nav bar is now Home (top left), Profile (right), and an About-me person
+  icon (far right). Profile shows as "Log in" until there's a session.
+* `/` is the landing page and renders the recipe list from the `recipes`
+  query. `/recipes` redirects to `/` so old links keep working.
+* New `/profile` (login required) shows username, email, role, join date,
+  a log-out button, and a "Create a recipe" link for admins.
+* New `/about` placeholder page. Replace the copy in `src/pages/About.jsx`.
+* Shared queries live in `src/graphql/queries.js`.
+
+### Login fixes (09/07/26)
+* **Profile showed "User must be logged in" right after login.** Auth0 sends
+  you back to `/`, where the landing page fires the recipes query while the
+  login callback is still being processed. That asked the SDK for a token with
+  an empty cache, so it tried the hidden-iframe check, got `login_required`
+  (browser blocks third-party cookies), and the SDK wiped its token cache,
+  including the token the login had just stored. The Apollo auth link now only
+  asks for a token once Auth0 reports a signed-in user, and it warns in the
+  console if a token cannot be produced.
+* **Consent screen on every refresh.** With the in-memory token cache, every
+  reload started empty and hit the same failing iframe check, so
+  `withAuthenticationRequired` sent you through a full login each time. Tokens
+  are back in `localStorage`. Note that Auth0 always shows the consent screen
+  for `localhost` callback URLs, so it will still appear on real logins in dev;
+  it goes away on a deployed hostname.
