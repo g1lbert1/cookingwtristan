@@ -14,18 +14,42 @@ const GET_ME = gql`
       _id
       username
       email
+      role
     }
   }
 `;
 
-const ProtectedCreateRecipe = 
-  withAuthenticationRequired(CreateRecipe, {
+//withAuthenticationRequired only checks for a login. Admin-only pages also need
+//the role from `me`, otherwise any signed-in user sees the form and only finds
+//out at submit time that the server returns FORBIDDEN.
+const RequireAdmin = ({ me, loading, error, children }) => {
+  if(loading) return <p>Loading...</p>;
+  if(error) return <p className="text-red-600">Couldn't verify your account: {error.message}</p>;
+  if(me?.role !== "admin"){
+    return (
+      <div>
+        <h2 className="text-xl font-bold">Admins only</h2>
+        <p>Your account does not have permission to create recipes.</p>
+      </div>
+    );
+  }
+  return children;
+};
+
+const ProtectedCreateRecipe = withAuthenticationRequired(
+  ({ me, loading, error }) => (
+    <RequireAdmin me={me} loading={loading} error={error}>
+      <CreateRecipe />
+    </RequireAdmin>
+  ),
+  {
     loginOptions: {
       appState: {
         returnTo: "/admin/createRecipe",
       },
     },
-  });
+  }
+);
 
 //Only the greeting depends on GET_ME, so a failure there is rendered in place
 //instead of replacing the whole page. The nav and routes always mount.
@@ -68,7 +92,10 @@ const App = () => {
             <Route path = "/" element={<Landing />} />
             <Route path = "/recipes" element={<Recipes />} />
             <Route path = "/recipes/:slug" element={<Recipe />} />
-            <Route path = "/admin/createRecipe" element={<ProtectedCreateRecipe />} /> 
+            <Route
+              path = "/admin/createRecipe"
+              element={<ProtectedCreateRecipe me={data?.me} loading={apolloLoading} error={error} />}
+            />
           </Routes>
         </div>
       </main>

@@ -32,3 +32,15 @@ real secret behind a `VITE_` prefix.
 
 The "ERROR getting user data" on account creation was a backend issue — see the
 Required Auth0 Action section in the cookingwdatabase README.
+
+### Audit follow-ups (medium)
+* `/admin/createRecipe` is gated on `me.role === "admin"`, not just on being
+  logged in. Non-admins see an "Admins only" notice instead of a form that
+  fails at submit time.
+* The create form shows the server's error message inline (validation,
+  FORBIDDEN, network) and a success line with the new slug; no more silent
+  failures or `alert()`.
+* Auth0 tokens are held in memory with rotating refresh tokens instead of
+  localStorage. For sessions to survive a reload without the iframe fallback,
+  enable **Allow Offline Access** on the API and **Refresh Token Rotation** on
+  the SPA application in the Auth0 dashboard.
