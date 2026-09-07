@@ -85,3 +85,11 @@ Required Auth0 Action section in the cookingwdatabase README.
   only own their mutation. Error text comes from `src/graphql/errors.js`.
 * `useMe()` in `src/hooks/useMe.js` is the one place that reads the signed-in
   user's role.
+* **"Consent required" / stale session in another browser.** A browser that
+  logged in before refresh tokens were enabled has a token cache without the
+  `offline_access` scope. The SDK still reports a user, so the UI looks signed
+  in, but no token can be produced silently. The Apollo link now sends the
+  user through a fresh login when the SDK reports `login_required`,
+  `consent_required`, `interaction_required`, `missing_refresh_token` or
+  `invalid_grant`, returning to the page they were on. The profile page also
+  keeps its log-out button when loading fails.

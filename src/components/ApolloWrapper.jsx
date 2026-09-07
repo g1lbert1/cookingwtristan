@@ -14,7 +14,22 @@ import { useAuth0 } from '@auth0/auth0-react';
 // the browser blocks third-party cookies. On that error the SDK wipes its
 // whole token cache, including a token the login just stored, so the very
 // next authenticated request went out without a bearer token.
-const auth = { getToken: null, canFetchToken: false };
+const auth = { getToken: null, canFetchToken: false, login: null };
+
+// Errors that mean "the stored session cannot produce a token without the
+// user going through Auth0 again": the session cookie is gone, consent is
+// needed (always the case on localhost), or the cached tokens predate the
+// current scope so there is no refresh token to use. The SDK still reports a
+// user from its cache in these cases, so the UI looks signed in. The only
+// sensible recovery is a fresh interactive login.
+const NEEDS_LOGIN = new Set([
+  'login_required',
+  'consent_required',
+  'interaction_required',
+  'missing_refresh_token',
+  'invalid_grant',
+]);
+let redirectingToLogin = false;
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_URI || 'http://localhost:4000/graphql',
@@ -31,6 +46,14 @@ const authLink = setContext(async (_, { headers }) => {
       },
     };
   } catch (e) {
+    if (NEEDS_LOGIN.has(e?.error) && auth.login && !redirectingToLogin) {
+      redirectingToLogin = true;
+      console.warn(`Auth0 session needs a new login (${e.error}); redirecting.`);
+      auth.login({
+        appState: { returnTo: window.location.pathname + window.location.search },
+      });
+      return { headers };
+    }
     // Signed in according to Auth0, but no token could be produced. Surface
     // it: a silent fallback here shows up as a confusing "must be logged in"
     // from the API with nothing in the console.
@@ -45,7 +68,7 @@ const client = new ApolloClient({
 });
 
 const ApolloWrapper = ({ children }) => {
-  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
+  const { getAccessTokenSilently, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
 
   // Layout effect, not a plain effect: a child's useEffect (where Apollo
   // subscribes and fires the request) runs before a parent's useEffect, but
@@ -53,8 +76,9 @@ const ApolloWrapper = ({ children }) => {
   // any query in the tree goes out.
   useLayoutEffect(() => {
     auth.getToken = getAccessTokenSilently;
+    auth.login = loginWithRedirect;
     auth.canFetchToken = !isLoading && isAuthenticated;
-  }, [getAccessTokenSilently, isAuthenticated, isLoading]);
+  }, [getAccessTokenSilently, loginWithRedirect, isAuthenticated, isLoading]);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

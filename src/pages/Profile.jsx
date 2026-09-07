@@ -10,12 +10,30 @@ const Profile = () => {
   const logout = () =>
     auth0Logout({ logoutParams: { returnTo: window.location.origin } });
 
+  const logoutButton = (
+    <button
+      type="button"
+      onClick={logout}
+      className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+    >
+      Log out
+    </button>
+  );
+
   if (loading) return <p className="text-gray-600">Loading your profile...</p>;
   if (error) {
+    // Keep a way out. A stale session is the usual cause, and logging out
+    // then back in clears it.
     return (
-      <p role="alert" className="text-red-600">
-        Couldn't load your profile: {error.message}
-      </p>
+      <section className="max-w-xl">
+        <p role="alert" className="text-red-600">
+          Couldn't load your profile: {error.message}
+        </p>
+        <p className="mt-2 text-sm text-gray-600">
+          Try logging out and back in.
+        </p>
+        <div className="mt-4">{logoutButton}</div>
+      </section>
     );
   }
 
@@ -63,13 +81,7 @@ const Profile = () => {
             Create a recipe
           </Link>
         )}
-        <button
-          type="button"
-          onClick={logout}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-        >
-          Log out
-        </button>
+        {logoutButton}
       </div>
     </section>
   );
