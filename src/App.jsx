@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import { useQuery } from '@apollo/client/react';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 import NavBar from './components/Navigation';
 import Landing from './pages/Landing';
 import Recipes from './pages/Recipes';
@@ -8,44 +7,43 @@ import Recipe from './pages/Recipe';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import CreateRecipe from './pages/CreateRecipe.jsx';
-import { GET_ME } from './graphql/queries';
+import EditRecipe from './pages/EditRecipe.jsx';
+import { useMe } from './hooks/useMe';
 
 //withAuthenticationRequired only checks for a login. Admin-only pages also need
 //the role from `me`, otherwise any signed-in user sees the form and only finds
 //out at submit time that the server returns FORBIDDEN.
 const RequireAdmin = ({ children }) => {
-  const { data, loading, error } = useQuery(GET_ME);
+  const { isAdmin, loading, error } = useMe();
   if(loading) return <p>Loading...</p>;
   if(error) return <p className="text-red-600">Couldn't verify your account: {error.message}</p>;
-  if(data?.me?.role !== "admin"){
+  if(!isAdmin){
     return (
       <div>
         <h2 className="text-xl font-bold">Admins only</h2>
-        <p>Your account does not have permission to create recipes.</p>
+        <p>Your account does not have permission to manage recipes.</p>
       </div>
     );
   }
   return children;
 };
 
-const ProtectedCreateRecipe = withAuthenticationRequired(
-  () => (
-    <RequireAdmin>
-      <CreateRecipe />
-    </RequireAdmin>
-  ),
-  { loginOptions: { appState: { returnTo: "/admin/createRecipe" } } }
-);
+//withAuthenticationRequired's default returnTo is the current path, which is
+//what we want for both admin routes (including the slug in the edit URL).
+const ProtectedCreateRecipe = withAuthenticationRequired(() => (
+  <RequireAdmin><CreateRecipe /></RequireAdmin>
+));
 
-const ProtectedProfile = withAuthenticationRequired(Profile, {
-  loginOptions: { appState: { returnTo: "/profile" } },
-});
+const ProtectedEditRecipe = withAuthenticationRequired(() => (
+  <RequireAdmin><EditRecipe /></RequireAdmin>
+));
+
+const ProtectedProfile = withAuthenticationRequired(Profile);
 
 const App = () => {
-  //Warms the Apollo cache once the session is known, so Profile and the
-  //admin guard render from cache instead of each firing their own request.
-  const { isLoading, isAuthenticated } = useAuth0();
-  useQuery(GET_ME, { skip: isLoading || !isAuthenticated });
+  //Warms the Apollo cache once the session is known, so Profile, the admin
+  //guard, and the list's admin controls all render from cache.
+  useMe();
 
   return(
     <>
@@ -58,6 +56,7 @@ const App = () => {
           <Route path="/profile" element={<ProtectedProfile />} />
           <Route path="/about" element={<About />} />
           <Route path="/admin/createRecipe" element={<ProtectedCreateRecipe />} />
+          <Route path="/admin/editRecipe/:slug" element={<ProtectedEditRecipe />} />
         </Routes>
       </main>
     </>

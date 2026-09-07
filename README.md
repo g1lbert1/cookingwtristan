@@ -71,3 +71,17 @@ Required Auth0 Action section in the cookingwdatabase README.
   are back in `localStorage`. Note that Auth0 always shows the consent screen
   for `localhost` callback URLs, so it will still appear on real logins in dev;
   it goes away on a deployed hostname.
+
+### Edit / delete UI (09/07/26)
+* Admins see **Edit** and **Delete** on each card on the landing page, plus a
+  **+ New recipe** button above the list.
+* `/admin/editRecipe/:slug` loads the recipe and reuses the create form.
+  Saving a new title changes the slug and the page follows it. A delete
+  section sits at the bottom of the edit page.
+* Delete is a two-step inline confirmation (no browser dialog). On success the
+  recipe is evicted from the Apollo cache so it disappears from the list
+  without a refetch.
+* The form lives in `src/components/RecipeForm.jsx`; create and edit pages
+  only own their mutation. Error text comes from `src/graphql/errors.js`.
+* `useMe()` in `src/hooks/useMe.js` is the one place that reads the signed-in
+  user's role.
