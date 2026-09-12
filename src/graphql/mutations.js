@@ -24,3 +24,17 @@ export const DELETE_RECIPE = gql`
     deleteRecipe(_id: $_id)
   }
 `;
+
+//Admin only. Everything the browser needs to upload one photo straight to
+//Cloudinary; see components/ImageUpload.jsx.
+export const CREATE_IMAGE_UPLOAD_SIGNATURE = gql`
+  mutation CreateImageUploadSignature {
+    createImageUploadSignature {
+      cloudName
+      apiKey
+      timestamp
+      signature
+      folder
+    }
+  }
+`;
