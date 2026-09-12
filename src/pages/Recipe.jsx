@@ -3,11 +3,11 @@ import { useQuery } from "@apollo/client/react";
 import { GET_RECIPE_BY_SLUG } from "../graphql/queries";
 import { getErrorMessage, isNotFound } from "../graphql/errors";
 import { useMe } from "../hooks/useMe";
-import { recipeImage } from "../recipeImages";
+import { imageSrc } from "../cloudinary";
 
 //Blog-style recipe page. Full-bleed navy background (#001357) with white
-//text; the rest of the site keeps its light layout. Photos are looked up by
-//slug in src/recipeImages.js until the schema has an image field.
+//text; the rest of the site keeps its light layout. The photo is the
+//recipe's imageUrl, uploaded from the admin form.
 
 const UNIT_LABELS = {
   GRAMS: "g",
@@ -92,7 +92,7 @@ const Recipe = () => {
   }
 
   const recipe = data.getRecipeBySlug;
-  const image = recipeImage(recipe.slug);
+  const image = imageSrc(recipe.imageUrl);
 
   return (
     <Shell>
@@ -124,7 +124,7 @@ const Recipe = () => {
           </ul>
         </header>
 
-        {/* PHOTO: comes from src/recipeImages.js, keyed by slug. */}
+        {/* PHOTO */}
         <figure className="mt-10">
           {image ? (
             <img

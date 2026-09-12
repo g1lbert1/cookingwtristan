@@ -9,6 +9,7 @@ export const RECIPE_FIELDS = gql`
     slug
     prepTime
     content
+    imageUrl
     ingredients {
       name
       amount
@@ -39,6 +40,7 @@ export const GET_RECIPES = gql`
       title
       slug
       prepTime
+      imageUrl
       ingredients {
         name
       }

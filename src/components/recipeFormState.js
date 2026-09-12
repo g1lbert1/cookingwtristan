@@ -19,6 +19,7 @@ export const emptyRecipe = () => ({
   title: "",
   prepTime: 0,
   content: "",
+  imageUrl: "",
   ingredients: [emptyIngredient()],
   instructions: [""],
 });
@@ -28,6 +29,7 @@ export const recipeToForm = (recipe) => ({
   title: recipe.title ?? "",
   prepTime: recipe.prepTime ?? 0,
   content: recipe.content ?? "",
+  imageUrl: recipe.imageUrl ?? "",
   ingredients: recipe.ingredients?.length
     ? recipe.ingredients.map((i) => ({
         name: i.name ?? "",
@@ -45,6 +47,7 @@ export const formToInput = (form) => ({
   title: form.title.trim(),
   prepTime: Number(form.prepTime),
   content: form.content.trim() || null,
+  imageUrl: form.imageUrl.trim() || null,
   ingredients: form.ingredients
     .filter((i) => i.name.trim() !== "")
     .map((i) => ({
