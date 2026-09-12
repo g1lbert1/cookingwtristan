@@ -1,0 +1,25 @@
+//Photos for the landing page's scrolling background. Files live in /public.
+//Add a photo by dropping it in public/ and appending its path here.
+export const GALLERY_IMAGES = [
+  "/antico.jpg",
+  "/blueberryfocaccia.jpg",
+  "/carbonara.jpg",
+  "/chickencarbonara.jpg",
+  "/chilaquiles.jpg",
+  "/classic.jpg",
+  "/creamy-garlic-chicken.jpg",
+  "/cutlets.jpg",
+  "/garlicfocaccia.jpg",
+  "/gnocchimarinara.jpg",
+  "/original.jpg",
+  "/risotto.jpg",
+  "/salmonbake.jpg",
+  "/shakshuka.jpg",
+  "/slowscramble.jpg",
+  "/sushibake1.jpg",
+  "/sushibake2.jpg",
+  "/sam1.jpg",
+  "/sam2.jpg",
+  "/sam3.jpg",
+  "/tortillas.jpg",
+];

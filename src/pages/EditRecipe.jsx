@@ -36,7 +36,7 @@ export default function EditRecipe() {
           {isNotFound(error) ? "Recipe not found" : "Couldn't load recipe"}
         </h1>
         <p className="mt-2 text-gray-600">{getErrorMessage(error)}</p>
-        <Link to="/" className="mt-4 inline-block text-sm font-medium text-gray-900 underline">
+        <Link to="/recipes" className="mt-4 inline-block text-sm font-medium text-gray-900 underline">
           Back to all recipes
         </Link>
       </div>
@@ -76,7 +76,7 @@ export default function EditRecipe() {
       <section className="mt-12 max-w-2xl border-t border-gray-200 pt-6">
         <h2 className="text-lg font-semibold text-gray-900">Delete this recipe</h2>
         <p className="mb-3 mt-1 text-sm text-gray-600">This cannot be undone.</p>
-        <DeleteRecipeButton recipe={recipe} onDeleted={() => navigate("/")} />
+        <DeleteRecipeButton recipe={recipe} onDeleted={() => navigate("/recipes")} />
       </section>
     </>
   );

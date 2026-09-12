@@ -27,3 +27,8 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Resume lives in public/ for local use only; never commit it
+public/Mikiewicz-Tristan-Updated-Res.pdf
+public/*resume*.pdf
+public/*Res*.pdf

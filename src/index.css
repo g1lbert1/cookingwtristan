@@ -1,1 +1,19 @@
 @import 'tailwindcss';
+
+/* Landing page photo wall. Each column holds two copies of its images, so
+   moving by 50% of the column's height lands exactly on the second copy. */
+@keyframes gallery-up {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+@keyframes gallery-down {
+  from { transform: translateY(-50%); }
+  to   { transform: translateY(0); }
+}
+.gallery-scroll-up   { animation: gallery-up 60s linear infinite; }
+.gallery-scroll-down { animation: gallery-down 60s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-scroll-up,
+  .gallery-scroll-down { animation: none; }
+}
