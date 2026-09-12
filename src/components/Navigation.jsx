@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 //Layout, left to right: Home | (spacer) | Profile | About (person icon).
 //Profile doubles as the login button when nobody is signed in, so the nav
@@ -24,7 +24,7 @@ const PersonIcon = () => (
 
 const linkClass = ({ isActive }) =>
   `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-    isActive ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100"
+    isActive ? "bg-gray-950 text-white" : "text-gray-200 hover:bg-gray-700"
   }`;
 
 const Navigation = () => {
@@ -34,7 +34,7 @@ const Navigation = () => {
     loginWithRedirect({ appState: { returnTo: "/profile" } });
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-10 border-b border-gray-700 bg-gray-800">
       <nav
         className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3"
         aria-label="Main"
@@ -53,20 +53,20 @@ const Navigation = () => {
               type="button"
               onClick={login}
               disabled={isLoading}
-              className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:opacity-50"
+              className={`${linkClass({ isActive: false })} disabled:opacity-50`}
             >
               Log in
             </button>
           )}
 
-          <Link
+          <NavLink
             to="/about"
-            className="rounded-full p-2 text-gray-700 transition-colors hover:bg-gray-100"
+            className={linkClass}
             aria-label="About me"
             title="About me"
           >
             <PersonIcon />
-          </Link>
+          </NavLink>
         </div>
       </nav>
     </header>
