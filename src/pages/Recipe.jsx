@@ -84,7 +84,7 @@ const Recipe = () => {
           {isNotFound(error) ? "Recipe not found" : "Couldn't load this recipe"}
         </h1>
         <p className="mt-3 text-white/70">{getErrorMessage(error)}</p>
-        <Link to="/" className="mt-6 inline-block font-medium underline underline-offset-4">
+        <Link to="/recipes" className="mt-6 inline-block font-medium underline underline-offset-4">
           Back to all recipes
         </Link>
       </Shell>
@@ -100,7 +100,7 @@ const Recipe = () => {
         {/* HEADER */}
         <header className="max-w-3xl">
           <nav className="mb-6 flex items-center justify-between text-sm">
-            <Link to="/" className="text-white/70 hover:text-white">← All recipes</Link>
+            <Link to="/recipes" className="text-white/70 hover:text-white">← All recipes</Link>
             {isAdmin && (
               <Link
                 to={`/admin/editRecipe/${recipe.slug}`}
