@@ -40,8 +40,8 @@ const ProtectedEditRecipe = withAuthenticationRequired(() => (
 
 const ProtectedProfile = withAuthenticationRequired(Profile);
 
-//Most pages sit in a centered column on the light background. The recipe
-//page opts out and paints its own full-bleed background.
+//Most pages sit in a centered column on the light background. The landing
+//and recipe pages opt out and paint their own full-bleed backgrounds.
 const Contained = () => (
   <div className="mx-auto w-full max-w-7xl p-6">
     <Outlet />
@@ -58,8 +58,8 @@ const App = () => {
       <NavBar />
       <main className="flex flex-1 flex-col">
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route element={<Contained />}>
-            <Route path="/" element={<Landing />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/profile" element={<ProtectedProfile />} />
             <Route path="/about" element={<About />} />
