@@ -13,7 +13,7 @@ const Recipes = () => {
           Recipes
         </h1>
         <p className="mt-2 text-gray-600">
-          Recipes I actually cook. Pick one and get started.
+          Enjoy!
         </p>
       </section>
 

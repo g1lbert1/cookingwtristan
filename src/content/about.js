@@ -6,17 +6,17 @@
 
 export const about = {
   name: "Tristan Mikiewicz",
-  tagline: "Software engineer who cooks.",
+  tagline: "In The Flesh",
   //Drop a headshot in public/ and set this to "/tristan.jpg". Until then the
   //page shows initials.
-  photo: null,
+  photo: "/tristan.jpg",
   location: "New Jersey",
 
   //Short facts shown as chips under the name.
   facts: [
     "23 years old",
     "Born in the Philippines",
-    "In the US since 2011",
+    "Loves Chess",
     "B.S. Computer Science, Stevens '26",
   ],
 
@@ -30,16 +30,13 @@ export const about = {
   },
 
   story: [
-    "I'm Tristan. I was born in the Philippines and moved to the United States in 2011, and I've been building things ever since I first figured out you could make a computer do what you told it to.",
-    "I graduated from Stevens Institute of Technology with a B.S. in Computer Science. What I care about most is developing projects that are genuinely cool to use and that give me room to be creative, whether that's a full-stack web app, a machine learning pipeline, or a search engine for engineering documents.",
-    "I have a lot of projects underway right now, so keep an eye on this page and my GitHub. New things land regularly.",
+    "Hi guys, welcome to the website. I am Tristan. Be sure to check out the game I'm working on which will be released soon. For now, eat some good food :)",
   ],
 
   whyThisSite: {
     heading: "Why a cooking site?",
     paragraphs: [
-      "Health and fitness are a big part of my life, and they're one of the main reasons this site exists. Eating well and training hard go together, and I got tired of choosing between food that tastes good and food that fits my goals.",
-      "So I share recipes that are fun and a little unique, but that still line up with the way I train and eat. If your goals look anything like mine, go check out the recipes.",
+      "This site is solves a problem for me: on my cooking instagram, I often run out of room in the caption section of a post when putting the recipes for food I make. But I want to share the process of how I make what I make, so this is how this site is born!",
     ],
     cta: { label: "Browse the recipes", to: "/recipes" },
   },
@@ -52,7 +49,7 @@ export const about = {
       period: null,
       bullets: [
         "Develop and maintain enterprise web pages using HTML, CSS (Bootstrap), and JavaScript.",
-        "Updated and enhanced 50+ pages with UI improvements, bug fixes, and reusable components, keeping a large production site consistent.",
+        "Updated and enhanced pages with UI improvements, bug fixes, and reusable components, keeping a large production site consistent.",
         "Improved site functionality by reworking navigation, page layouts, and shared components across many pages.",
         "Contributed to SEO and Answer Engine Optimization work by improving metadata, page structure, and content organization to raise search visibility.",
       ],
