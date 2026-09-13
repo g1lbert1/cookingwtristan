@@ -1,4 +1,5 @@
 import TiltedCard from "./TiltedCard";
+import Balatro from "./Balatro";
 import { GALLERY_IMAGES } from "../galleryImages";
 import { imageSrc } from "../cloudinary";
 
@@ -19,8 +20,18 @@ const columns = Array.from({ length: COLUMNS }, (_, c) =>
 );
 
 const GalleryBackground = () => (
-  <div className="absolute inset-0 overflow-hidden bg-gray-950" aria-hidden="true">
-    <div className="flex h-full w-full gap-3 px-3">
+  <div className="absolute inset-0 overflow-hidden bg-[#0a0baf]" aria-hidden="true">
+    {/* Balatro shader fills the gaps between and around the photo columns. */}
+    <div className="absolute inset-0">
+      <Balatro
+        color1="#0a0baf"
+        color2="#eeecf8"
+        color3="#000000"
+        pixelFilter={1050}
+        mouseInteraction={false}
+      />
+    </div>
+    <div className="relative flex h-full w-full gap-3 px-3">
       {columns.map((images, c) => (
         <div key={c} className="min-w-0 flex-1 overflow-hidden">
           <div

@@ -7,7 +7,7 @@ import Balatro from "../components/Balatro";
 
 //The panel runs the Balatro paint shader (deep blue / off-white / black);
 //the cards inside are near-black with a subtle border so they read as
-//separate blocks on top of it. The nav uses the same deep blue.
+//separate blocks on top of it. The same shader fills the gaps in the gallery.
 const cardClass =
   "flex flex-col justify-between rounded-2xl border border-white/10 bg-gray-950 p-6 text-white shadow-lg";
 
