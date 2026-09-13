@@ -22,8 +22,6 @@ export const GALLERY_IMAGES = [
   "https://res.cloudinary.com/unkkf9qr/image/upload/v1789336968/cookingwtristan/gallery/slowscramble.jpg",
   "https://res.cloudinary.com/unkkf9qr/image/upload/v1789336969/cookingwtristan/gallery/sushibake1.jpg",
   "https://res.cloudinary.com/unkkf9qr/image/upload/v1789336970/cookingwtristan/gallery/sushibake2.jpg",
-  "https://res.cloudinary.com/unkkf9qr/image/upload/v1789336972/cookingwtristan/gallery/sam1.jpg",
-  "https://res.cloudinary.com/unkkf9qr/image/upload/v1789336973/cookingwtristan/gallery/sam2.jpg",
   "https://res.cloudinary.com/unkkf9qr/image/upload/v1789336974/cookingwtristan/gallery/sam3.jpg",
   "https://res.cloudinary.com/unkkf9qr/image/upload/v1789336975/cookingwtristan/gallery/tortillas.jpg",
 ];
