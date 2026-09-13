@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import GalleryBackground from "../components/GalleryBackground";
 import Balatro from "../components/Balatro";
+import Seo from "../components/Seo";
 
 //Landing page: scrolling photo wall behind three cards. This route sits
 //outside the shared centered container so the background runs full-bleed.
@@ -13,6 +14,7 @@ const cardClass =
 
 const Landing = () => (
   <div className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
+    <Seo image="/og-image.jpg" />
     <GalleryBackground />
 
     <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">

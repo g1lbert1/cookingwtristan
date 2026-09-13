@@ -2,9 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cookingwtristan</title>
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Static defaults. Pages override these at runtime via src/components/Seo.jsx;
+         scrapers that do not run JavaScript see only what is here. -->
+    <title>Cooking with Tristan</title>
+    <meta name="description" content="Recipes I actually cook, with photos and step-by-step instructions." />
+    <meta property="og:site_name" content="Cooking with Tristan" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Cooking with Tristan" />
+    <meta property="og:description" content="Recipes I actually cook, with photos and step-by-step instructions." />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

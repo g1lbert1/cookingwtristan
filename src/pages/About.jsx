@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { about } from "../content/about";
+import Seo from "../components/Seo";
 
 //About / CV page. All copy lives in src/content/about.js; this file is layout.
 
@@ -47,6 +48,7 @@ const About = () => {
 
   return (
     <div className="max-w-6xl">
+      <Seo title="About me" description={`${name}. ${tagline}`} image={photo} />
       {/* HERO */}
       <header className="flex flex-col gap-6 sm:flex-row sm:items-center">
         {photo ? (
