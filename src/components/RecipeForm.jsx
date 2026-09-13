@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getErrorMessage } from "../graphql/errors";
+import ImageUpload from "./ImageUpload";
 import {
   UNIT_OPTIONS,
   emptyIngredient,
@@ -99,6 +100,15 @@ export default function RecipeForm({
           placeholder="Optional notes about the dish"
           value={recipe.content}
           onChange={(e) => setField("content", e.target.value)}
+        />
+      </div>
+
+      <div>
+        <p className={labelClass}>Photo</p>
+        <ImageUpload
+          value={recipe.imageUrl}
+          onChange={(url) => setField("imageUrl", url)}
+          disabled={submitting}
         />
       </div>
 
