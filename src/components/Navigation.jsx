@@ -1,6 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavLink } from "react-router-dom";
-import Balatro from "./Balatro";
 
 //Layout, left to right: Home | (spacer) | Recipes | Profile | About (person icon).
 //Profile doubles as the login button when nobody is signed in, so the nav
@@ -37,19 +36,9 @@ const Navigation = () => {
     loginWithRedirect({ appState: { returnTo: "/profile" } });
 
   return (
-    <header className="sticky top-0 z-10 overflow-hidden border-b border-white/10 bg-[#0a0baf]">
-      {/* Same Balatro shader as the landing panel, running behind the links. */}
-      <div className="absolute inset-0" aria-hidden="true">
-        <Balatro
-          color1="#0a0baf"
-          color2="#eeecf8"
-          color3="#000000"
-          pixelFilter={1050}
-          mouseInteraction={false}
-        />
-      </div>
+    <header className="sticky top-0 z-10 border-b border-gray-700 bg-gray-800">
       <nav
-        className="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-3"
+        className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3"
         aria-label="Main"
       >
         <NavLink to="/" end className={linkClass}>
