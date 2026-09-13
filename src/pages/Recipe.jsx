@@ -4,6 +4,7 @@ import { GET_RECIPE_BY_SLUG } from "../graphql/queries";
 import { getErrorMessage, isNotFound } from "../graphql/errors";
 import { useMe } from "../hooks/useMe";
 import { imageSrc } from "../cloudinary";
+import Seo from "../components/Seo";
 
 //Blog-style recipe page. Full-bleed navy background (#001357) with white
 //text; the rest of the site keeps its light layout. The photo is the
@@ -96,6 +97,11 @@ const Recipe = () => {
 
   return (
     <Shell>
+      <Seo
+        title={recipe.title}
+        description={recipe.content || `${recipe.title}: ingredients and step-by-step instructions.`}
+        image={imageSrc(recipe.imageUrl, { width: 1200 })}
+      />
       <article>
         {/* HEADER */}
         <header className="max-w-3xl">

@@ -6,6 +6,7 @@ import { getErrorMessage, isNotFound } from "../graphql/errors";
 import RecipeForm from "../components/RecipeForm";
 import { recipeToForm } from "../components/recipeFormState";
 import DeleteRecipeButton from "../components/DeleteRecipeButton";
+import Seo from "../components/Seo";
 
 export default function EditRecipe() {
   const { slug } = useParams();
@@ -56,6 +57,7 @@ export default function EditRecipe() {
 
   return (
     <>
+      <Seo title="Edit recipe" noindex />
       <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-2xl font-bold text-gray-900">Edit recipe</h1>
         <Link to={`/recipes/${recipe.slug}`} className="text-sm font-medium text-gray-700 underline">
