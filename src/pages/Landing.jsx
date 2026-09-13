@@ -5,7 +5,7 @@ import Balatro from "../components/Balatro";
 //Landing page: scrolling photo wall behind three cards. This route sits
 //outside the shared centered container so the background runs full-bleed.
 
-//The panel runs the Balatro paint shader (deep blue / off-white / black);
+//The panel runs the Balatro paint shader (black / electric blue / black);
 //the cards inside are near-black with a subtle border so they read as
 //separate blocks on top of it. The same shader fills the gaps in the gallery.
 const cardClass =
@@ -15,13 +15,13 @@ const Landing = () => (
   <div className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
     <GalleryBackground />
 
-    <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#0a0baf] shadow-2xl">
+    <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
       <div className="absolute inset-0" aria-hidden="true">
         <Balatro
-          color1="#0a0baf"
-          color2="#eeecf8"
+          color1="#000000"
+          color2="#2700ea"
           color3="#000000"
-          pixelFilter={1050}
+          pixelFilter={1100}
           mouseInteraction={false}
         />
       </div>
