@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavLink } from "react-router-dom";
 
-//Layout, left to right: Home | (spacer) | Profile | About (person icon).
+//Layout, left to right: Home | (spacer) | Recipes | Profile | About (person icon).
 //Profile doubles as the login button when nobody is signed in, so the nav
 //keeps the same shape in both states.
 
@@ -22,9 +22,11 @@ const PersonIcon = () => (
   </svg>
 );
 
+//Every item is the same black pill with a drop shadow; the current page
+//gets a thin light ring so it is still identifiable.
 const linkClass = ({ isActive }) =>
-  `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-    isActive ? "bg-gray-950 text-white" : "text-gray-200 hover:bg-gray-700"
+  `rounded-md bg-gray-950 px-3 py-2 text-sm font-medium text-white shadow-md shadow-black/40 transition hover:bg-gray-800 hover:shadow-lg ${
+    isActive ? "ring-1 ring-white/40" : ""
   }`;
 
 const Navigation = () => {
@@ -34,7 +36,7 @@ const Navigation = () => {
     loginWithRedirect({ appState: { returnTo: "/profile" } });
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-700 bg-gray-800">
+    <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0baf]">
       <nav
         className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3"
         aria-label="Main"
@@ -44,6 +46,10 @@ const Navigation = () => {
         </NavLink>
 
         <div className="flex items-center gap-2">
+          <NavLink to="/recipes" className={linkClass}>
+            Recipes
+          </NavLink>
+
           {isAuthenticated ? (
             <NavLink to="/profile" className={linkClass}>
               Profile
