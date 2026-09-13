@@ -22,11 +22,11 @@ const PersonIcon = () => (
   </svg>
 );
 
-//Every item is the same black pill with a drop shadow; the current page
-//gets a thin light ring so it is still identifiable.
+//Black bar, white pills with a drop shadow; the current page gets a thin
+//dark ring so it is still identifiable.
 const linkClass = ({ isActive }) =>
-  `rounded-md bg-gray-950 px-3 py-2 text-sm font-medium text-white shadow-md shadow-black/40 transition hover:bg-gray-800 hover:shadow-lg ${
-    isActive ? "ring-1 ring-white/40" : ""
+  `rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-md shadow-black/60 transition hover:bg-gray-200 hover:shadow-lg ${
+    isActive ? "ring-2 ring-gray-400" : ""
   }`;
 
 const Navigation = () => {
@@ -36,7 +36,7 @@ const Navigation = () => {
     loginWithRedirect({ appState: { returnTo: "/profile" } });
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-700 bg-gray-800">
+    <header className="sticky top-0 z-10 border-b border-white/10 bg-black">
       <nav
         className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3"
         aria-label="Main"
