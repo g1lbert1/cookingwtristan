@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import RecipeList from "../components/RecipeList";
 import { useMe } from "../hooks/useMe";
+import Seo from "../components/Seo";
 
 //The full recipe list. The landing page links here from its "Recipes" card.
 const Recipes = () => {
@@ -8,12 +9,13 @@ const Recipes = () => {
 
   return (
     <>
+      <Seo title="Recipes" description="Every recipe on Cooking with Tristan, with photos and step-by-step instructions." />
       <section className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">
           Recipes
         </h1>
         <p className="mt-2 text-gray-600">
-          Recipes I actually cook. Pick one and get started.
+          Enjoy!
         </p>
       </section>
 

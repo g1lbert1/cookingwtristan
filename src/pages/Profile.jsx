@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useQuery } from "@apollo/client/react";
 import { GET_ME } from "../graphql/queries";
+import Seo from "../components/Seo";
 
 const Profile = () => {
   const { logout: auth0Logout } = useAuth0();
@@ -42,6 +43,7 @@ const Profile = () => {
 
   return (
     <section className="max-w-xl">
+      <Seo title="Profile" noindex />
       <div className="flex items-center gap-4">
         {me?.avatar ? (
           <img
