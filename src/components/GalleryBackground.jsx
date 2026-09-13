@@ -41,7 +41,7 @@ const GalleryBackground = () => (
             {[0, 1].map((copy) => (
               <div key={copy} className="flex flex-col gap-3">
                 {images.map((src) => (
-                  <div key={src} className="aspect-[4/5] w-full">
+                  <div key={src} className="mx-auto aspect-[4/5] w-[90%]">
                     <TiltedCard
                       imageSrc={imageSrc(src, { width: 600 })}
                       altText=""
