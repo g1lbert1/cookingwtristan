@@ -1,5 +1,6 @@
 import TiltedCard from "./TiltedCard";
 import { GALLERY_IMAGES } from "../galleryImages";
+import { imageSrc } from "../cloudinary";
 
 //Full-bleed wall of photos behind the landing page. The photos are dealt
 //round-robin into columns; each column is rendered twice, stacked, and
@@ -9,6 +10,7 @@ import { GALLERY_IMAGES } from "../galleryImages";
 //
 //Each photo is a ReactBits-style TiltedCard that leans toward the cursor on
 //spring physics. Scale is pinned to 1 so photos tilt without growing.
+//Columns are about a quarter of the viewport, so 600px wide is plenty.
 
 const COLUMNS = 4;
 
@@ -30,7 +32,7 @@ const GalleryBackground = () => (
                 {images.map((src) => (
                   <div key={src} className="aspect-[4/5] w-full">
                     <TiltedCard
-                      imageSrc={src}
+                      imageSrc={imageSrc(src, { width: 600 })}
                       altText=""
                       containerWidth="100%"
                       containerHeight="100%"
