@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client/react";
 import { GET_RECIPES } from "../graphql/queries";
 import { useMe } from "../hooks/useMe";
 import DeleteRecipeButton from "./DeleteRecipeButton";
+import { imageSrc } from "../cloudinary";
 
 const formatPrepTime = (minutes) => {
   if (minutes < 60) return `${minutes} min`;
@@ -14,16 +15,26 @@ const formatPrepTime = (minutes) => {
 //The card body is the link; admin controls sit outside it so buttons are not
 //nested inside an anchor.
 const RecipeCard = ({ recipe, isAdmin }) => (
-  <li className="flex h-full flex-col rounded-lg border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-    <Link to={`/recipes/${recipe.slug}`} className="group flex-1">
-      <h3 className="text-lg font-semibold text-gray-900 group-hover:underline">{recipe.title}</h3>
-      <p className="mt-2 text-sm text-gray-600">
-        {formatPrepTime(recipe.prepTime)} · {recipe.ingredients.length}{" "}
-        {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}
-      </p>
+  <li className="flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <Link to={`/recipes/${recipe.slug}`} className="group flex flex-1 flex-col">
+      {recipe.imageUrl && (
+        <img
+          src={imageSrc(recipe.imageUrl, { width: 800 })}
+          alt=""
+          loading="lazy"
+          className="aspect-[4/3] w-full object-cover"
+        />
+      )}
+      <div className="p-5">
+        <h3 className="text-lg font-semibold text-gray-900 group-hover:underline">{recipe.title}</h3>
+        <p className="mt-2 text-sm text-gray-600">
+          {formatPrepTime(recipe.prepTime)} · {recipe.ingredients.length}{" "}
+          {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}
+        </p>
+      </div>
     </Link>
     {isAdmin && (
-      <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-3">
+      <div className="mx-5 mb-5 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-3">
         <Link
           to={`/admin/editRecipe/${recipe.slug}`}
           className="text-sm font-medium text-gray-700 hover:underline"
