@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Static pages only. Recipe pages are discovered by crawlers through links
-     from /recipes. Replace YOUR-DOMAIN with the real hostname once deployed. -->
+<!-- Static pages only. Recipe pages are discovered by crawlers through links from /recipes. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://YOUR-DOMAIN/</loc></url>
-  <url><loc>https://YOUR-DOMAIN/recipes</loc></url>
-  <url><loc>https://YOUR-DOMAIN/about</loc></url>
+  <url><loc>https://cookingwtristan.com/</loc></url>
+  <url><loc>https://cookingwtristan.com/recipes</loc></url>
+  <url><loc>https://cookingwtristan.com/about</loc></url>
 </urlset>
