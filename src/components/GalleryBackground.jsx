@@ -20,14 +20,14 @@ const columns = Array.from({ length: COLUMNS }, (_, c) =>
 );
 
 const GalleryBackground = () => (
-  <div className="absolute inset-0 overflow-hidden bg-[#0a0baf]" aria-hidden="true">
+  <div className="absolute inset-0 overflow-hidden bg-black" aria-hidden="true">
     {/* Balatro shader fills the gaps between and around the photo columns. */}
     <div className="absolute inset-0">
       <Balatro
-        color1="#0a0baf"
-        color2="#eeecf8"
+        color1="#000000"
+        color2="#2700ea"
         color3="#000000"
-        pixelFilter={1050}
+        pixelFilter={1100}
         mouseInteraction={false}
       />
     </div>
