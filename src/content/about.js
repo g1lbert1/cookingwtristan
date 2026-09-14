@@ -26,7 +26,9 @@ export const about = {
     linkedin: "https://linkedin.com/in/tristan-mikiewicz",
     //Served from public/. The file is gitignored, so on a deployed build it
     //has to be uploaded separately (or set this to null to hide the button).
-    resume: "/Mikiewicz-Tristan-Updated-Res.pdf",
+    //Hosted on Cloudinary (raw asset). fl_attachment makes browsers download
+    //it instead of opening it inline. Re-upload with the same name to update.
+    resume: "https://res.cloudinary.com/unkkf9qr/raw/upload/fl_attachment/v1789349892/cookingwtristan/Mikiewicz-Tristan-Resume.pdf",
   },
 
   story: [
