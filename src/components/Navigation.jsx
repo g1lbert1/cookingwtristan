@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavLink } from "react-router-dom";
 
@@ -31,6 +32,13 @@ const linkClass = ({ isActive }) =>
 
 const Navigation = () => {
   const { isAuthenticated, isLoading, loginWithRedirect, error } = useAuth0();
+
+  //A failed login redirect (bad state, refused token exchange, misconfigured
+  //tenant) is only reported through this value. Keep it visible in the
+  //console so a silent failure can still be diagnosed.
+  useEffect(() => {
+    if (error) console.error("Auth0 login failed:", error);
+  }, [error]);
 
   const login = () =>
     loginWithRedirect({ appState: { returnTo: "/profile" } });
@@ -75,14 +83,6 @@ const Navigation = () => {
           </NavLink>
         </div>
       </nav>
-      {/* The SDK reports a failed login redirect (bad state, token exchange
-          refused, misconfigured tenant) only through this value. Without
-          showing it, a failed login looks like nothing happened. */}
-      {error && (
-        <p role="alert" className="border-t border-red-900 bg-red-950 px-4 py-2 text-center text-sm text-red-200">
-          Login failed: {error.message || String(error)}
-        </p>
-      )}
     </header>
   );
 };
