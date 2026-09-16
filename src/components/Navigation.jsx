@@ -30,7 +30,7 @@ const linkClass = ({ isActive }) =>
   }`;
 
 const Navigation = () => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading, loginWithRedirect, error } = useAuth0();
 
   const login = () =>
     loginWithRedirect({ appState: { returnTo: "/profile" } });
@@ -75,6 +75,14 @@ const Navigation = () => {
           </NavLink>
         </div>
       </nav>
+      {/* The SDK reports a failed login redirect (bad state, token exchange
+          refused, misconfigured tenant) only through this value. Without
+          showing it, a failed login looks like nothing happened. */}
+      {error && (
+        <p role="alert" className="border-t border-red-900 bg-red-950 px-4 py-2 text-center text-sm text-red-200">
+          Login failed: {error.message || String(error)}
+        </p>
+      )}
     </header>
   );
 };
