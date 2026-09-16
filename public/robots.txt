@@ -3,5 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /profile
 
-# Replace YOUR-DOMAIN with the real hostname once the site is deployed.
-Sitemap: https://YOUR-DOMAIN/sitemap.xml
+Sitemap: https://cookingwtristan.com/sitemap.xml
