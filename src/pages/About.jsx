@@ -69,9 +69,6 @@ const About = () => {
       </header>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {links.email && (
-          <a href={`mailto:${links.email}`} className={linkButton}><MailIcon /> Email</a>
-        )}
         {links.github && (
           <a href={links.github} target="_blank" rel="noreferrer" className={linkButton}><GitHubIcon /> GitHub</a>
         )}
