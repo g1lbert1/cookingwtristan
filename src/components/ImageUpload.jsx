@@ -5,11 +5,19 @@ import { getErrorMessage } from "../graphql/errors";
 import { imageSrc } from "../cloudinary";
 
 //Photo picker for the recipe form. The file goes from the browser straight
-//to Cloudinary: we ask our API for a signature (signed-in users; the secret stays on
-//the server), post the file plus that signature to Cloudinary, and hand the
-//returned URL to the form. The form stores only the URL.
+//to Cloudinary: we ask our API for a signed set of upload fields (signed-in
+//users; the secret stays on the server), post the file plus those fields
+//verbatim to Cloudinary, and hand the returned URL to the form. The form
+//stores only the URL.
+//
+//The checks below are for a quick, friendly error. The real limits are
+//inside the signature (allowed formats, size-capping transformation) and
+//Cloudinary enforces them whatever the browser sends.
 
-const MAX_BYTES = 15 * 1024 * 1024;
+//Cloudinary's per-image ceiling on the free plan.
+const MAX_BYTES = 10 * 1024 * 1024;
+//Mirrors the server's allowed_formats. No SVG, no GIF.
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "image/avif"];
 
 const buttonClass =
   "rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50";
@@ -18,9 +26,9 @@ const uploadToCloudinary = async (file, sig) => {
   const body = new FormData();
   body.append("file", file);
   body.append("api_key", sig.apiKey);
-  body.append("timestamp", String(sig.timestamp));
-  body.append("signature", sig.signature);
-  body.append("folder", sig.folder);
+  //Every signed field, exactly as issued. Changing or dropping one breaks
+  //the signature and Cloudinary refuses the upload.
+  for (const { name, value } of sig.fields) body.append(name, value);
 
   const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`, {
     method: "POST",
@@ -46,12 +54,12 @@ export default function ImageUpload({ value, onChange, disabled }) {
     if (!file) return;
 
     setError(null);
-    if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      setError("Please choose a JPG, PNG, WebP, HEIC or AVIF photo.");
       return;
     }
     if (file.size > MAX_BYTES) {
-      setError("That photo is over 15 MB. Please pick a smaller one.");
+      setError("That photo is over 10 MB. Please pick a smaller one.");
       return;
     }
 
@@ -111,7 +119,7 @@ export default function ImageUpload({ value, onChange, disabled }) {
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={ACCEPTED_TYPES.join(",")}
         className="hidden"
         onChange={handleFile}
         disabled={busy}

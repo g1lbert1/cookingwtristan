@@ -80,9 +80,10 @@ export const CREATE_IMAGE_UPLOAD_SIGNATURE = gql`
     createImageUploadSignature {
       cloudName
       apiKey
-      timestamp
-      signature
-      folder
+      fields {
+        name
+        value
+      }
     }
   }
 `;
