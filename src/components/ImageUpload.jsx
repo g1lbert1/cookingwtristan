@@ -5,7 +5,7 @@ import { getErrorMessage } from "../graphql/errors";
 import { imageSrc } from "../cloudinary";
 
 //Photo picker for the recipe form. The file goes from the browser straight
-//to Cloudinary: we ask our API for a signature (admin only, secret stays on
+//to Cloudinary: we ask our API for a signature (signed-in users; the secret stays on
 //the server), post the file plus that signature to Cloudinary, and hand the
 //returned URL to the form. The form stores only the URL.
 

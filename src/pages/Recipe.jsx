@@ -5,10 +5,11 @@ import { getErrorMessage, isNotFound } from "../graphql/errors";
 import { useMe } from "../hooks/useMe";
 import { imageSrc } from "../cloudinary";
 import Seo from "../components/Seo";
+import { SITE_AUTHOR } from "../content/site";
 
 //Blog-style recipe page. Full-bleed navy background (#001357) with white
 //text; the rest of the site keeps its light layout. The photo is the
-//recipe's imageUrl, uploaded from the admin form.
+//recipe's imageUrl, uploaded from the recipe form.
 
 const UNIT_LABELS = {
   GRAMS: "g",
@@ -68,7 +69,7 @@ const Shell = ({ children }) => (
 const Recipe = () => {
   const { slug } = useParams();
   const { data, loading, error } = useQuery(GET_RECIPE_BY_SLUG, { variables: { slug } });
-  const { isAdmin } = useMe();
+  const { canManage } = useMe();
 
   if (loading) {
     return (
@@ -107,9 +108,9 @@ const Recipe = () => {
         <header className="max-w-3xl">
           <nav className="mb-6 flex items-center justify-between text-sm">
             <Link to="/recipes" className="text-white/70 hover:text-white">← All recipes</Link>
-            {isAdmin && (
+            {canManage(recipe) && (
               <Link
-                to={`/admin/editRecipe/${recipe.slug}`}
+                to={`/recipes/${recipe.slug}/edit`}
                 className="rounded-md border border-white/30 px-3 py-1 font-medium hover:bg-white/10"
               >
                 Edit
@@ -120,6 +121,13 @@ const Recipe = () => {
           <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
             {recipe.title}
           </h1>
+
+          <p className="mt-3 text-white/70">
+            by <span className="font-medium text-white">{recipe.author?.username ?? SITE_AUTHOR}</span>
+            {recipe.likeCount > 0 && (
+              <span> · {recipe.likeCount} {recipe.likeCount === 1 ? "like" : "likes"}</span>
+            )}
+          </p>
 
           <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
             <li className="flex items-center gap-2">

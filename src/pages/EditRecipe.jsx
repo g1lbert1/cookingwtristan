@@ -7,11 +7,13 @@ import RecipeForm from "../components/RecipeForm";
 import { recipeToForm } from "../components/recipeFormState";
 import DeleteRecipeButton from "../components/DeleteRecipeButton";
 import Seo from "../components/Seo";
+import { useMe } from "../hooks/useMe";
 
 export default function EditRecipe() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { data, loading, error } = useQuery(GET_RECIPE_BY_SLUG, { variables: { slug } });
+  const { canManage, loading: meLoading } = useMe();
 
   const [updateRecipe] = useMutation(UPDATE_RECIPE, {
     //Changing the title changes the slug, and this page is addressed by slug.
@@ -28,7 +30,7 @@ export default function EditRecipe() {
     },
   });
 
-  if (loading) return <p className="text-gray-600">Loading recipe...</p>;
+  if (loading || meLoading) return <p className="text-gray-600">Loading recipe...</p>;
 
   if (error) {
     return (
@@ -46,11 +48,25 @@ export default function EditRecipe() {
 
   const recipe = data.getRecipeBySlug;
 
+  //The server enforces this too; checking here means the form never appears
+  //for a recipe the viewer cannot save.
+  if (!canManage(recipe)) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Not your recipe</h1>
+        <p className="mt-2 text-gray-600">You can only edit recipes you posted.</p>
+        <Link to={`/recipes/${recipe.slug}`} className="mt-4 inline-block text-sm font-medium text-gray-900 underline">
+          View recipe
+        </Link>
+      </div>
+    );
+  }
+
   const handleSubmit = async (input) => {
     const { data: result } = await updateRecipe({ variables: { _id: recipe._id, input } });
     const updated = result.updateRecipe;
     if (updated.slug !== slug) {
-      navigate(`/admin/editRecipe/${updated.slug}`, { replace: true });
+      navigate(`/recipes/${updated.slug}/edit`, { replace: true });
     }
     return `Saved "${updated.title}".`;
   };

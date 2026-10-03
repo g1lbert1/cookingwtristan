@@ -17,6 +17,13 @@ export const RECIPE_FIELDS = gql`
       notes
     }
     instructions
+    likeCount
+    createdAt
+    author {
+      _id
+      username
+      avatar
+    }
   }
 `;
 
@@ -41,6 +48,11 @@ export const GET_RECIPES = gql`
       slug
       prepTime
       imageUrl
+      likeCount
+      author {
+        _id
+        username
+      }
       ingredients {
         name
       }

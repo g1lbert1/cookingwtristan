@@ -10,9 +10,17 @@ export const useMe = () => {
     skip: authLoading || !isAuthenticated,
   });
   const me = isAuthenticated ? data?.me ?? null : null;
+  const isAdmin = me?.role === "admin";
+
+  //Mirrors the server rule: the poster or an admin may edit and delete.
+  //Recipes without an author are the site's own and admin-only.
+  const canManage = (recipe) =>
+    Boolean(me) && (isAdmin || (recipe?.author?._id != null && recipe.author._id === me._id));
+
   return {
     me,
-    isAdmin: me?.role === "admin",
+    isAdmin,
+    canManage,
     loading: authLoading || loading,
     error,
   };

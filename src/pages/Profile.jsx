@@ -75,14 +75,12 @@ const Profile = () => {
       </dl>
 
       <div className="mt-8 flex flex-wrap gap-3">
-        {me?.role === "admin" && (
-          <Link
-            to="/admin/createRecipe"
-            className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            Create a recipe
-          </Link>
-        )}
+        <Link
+          to="/recipes/new"
+          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+        >
+          Share a recipe
+        </Link>
         {logoutButton}
       </div>
     </section>
