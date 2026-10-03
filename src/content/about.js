@@ -25,11 +25,13 @@ export const about = {
     email: "tristanmikie@gmail.com",
     github: "https://github.com/g1lbert1",
     linkedin: "https://linkedin.com/in/tristan-mikiewicz",
-    //Served from public/. The file is gitignored, so on a deployed build it
-    //has to be uploaded separately (or set this to null to hide the button).
-    //Hosted on Cloudinary (raw asset). fl_attachment makes browsers download
-    //it instead of opening it inline. Re-upload with the same name to update.
-    resume: "https://res.cloudinary.com/unkkf9qr/raw/upload/fl_attachment/v1789349892/cookingwtristan/Mikiewicz-Tristan-Resume.pdf",
+    //Hosted on Cloudinary as an image-type asset (what the Media Library
+    //makes of an uploaded PDF), hence the .pdf.pdf: public id plus format.
+    //No version segment, so a Replace in the console shows up here without
+    //a code change. fl_attachment:<name> makes browsers download it under
+    //that filename instead of opening it inline. Set to null to hide the
+    //button.
+    resume: "https://res.cloudinary.com/unkkf9qr/image/upload/fl_attachment:Mikiewicz-Tristan-Resume/cookingwtristan/Mikiewicz-Tristan-Resume.pdf.pdf",
   },
 
   story: [
