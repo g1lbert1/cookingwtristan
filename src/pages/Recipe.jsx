@@ -5,10 +5,13 @@ import { getErrorMessage, isNotFound } from "../graphql/errors";
 import { useMe } from "../hooks/useMe";
 import { imageSrc } from "../cloudinary";
 import Seo from "../components/Seo";
+import { FavoriteButton, LikeButton } from "../components/ReactionButtons";
+import Comments from "../components/Comments";
+import { SITE_AUTHOR } from "../content/site";
 
 //Blog-style recipe page. Full-bleed navy background (#001357) with white
 //text; the rest of the site keeps its light layout. The photo is the
-//recipe's imageUrl, uploaded from the admin form.
+//recipe's imageUrl, uploaded from the recipe form.
 
 const UNIT_LABELS = {
   GRAMS: "g",
@@ -68,7 +71,7 @@ const Shell = ({ children }) => (
 const Recipe = () => {
   const { slug } = useParams();
   const { data, loading, error } = useQuery(GET_RECIPE_BY_SLUG, { variables: { slug } });
-  const { isAdmin } = useMe();
+  const { canManage } = useMe();
 
   if (loading) {
     return (
@@ -107,9 +110,9 @@ const Recipe = () => {
         <header className="max-w-3xl">
           <nav className="mb-6 flex items-center justify-between text-sm">
             <Link to="/recipes" className="text-white/70 hover:text-white">← All recipes</Link>
-            {isAdmin && (
+            {canManage(recipe) && (
               <Link
-                to={`/admin/editRecipe/${recipe.slug}`}
+                to={`/recipes/${recipe.slug}/edit`}
                 className="rounded-md border border-white/30 px-3 py-1 font-medium hover:bg-white/10"
               >
                 Edit
@@ -121,12 +124,26 @@ const Recipe = () => {
             {recipe.title}
           </h1>
 
+          <p className="mt-3 text-white/70">
+            by <span className="font-medium text-white">{recipe.author?.username ?? SITE_AUTHOR}</span>
+          </p>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <LikeButton recipe={recipe} tone="dark" />
+            <FavoriteButton recipe={recipe} tone="dark" />
+          </div>
+
           <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
             <li className="flex items-center gap-2">
               <ClockIcon /> {formatPrepTime(recipe.prepTime)}
             </li>
             <li>{recipe.ingredients.length} {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}</li>
             <li>{recipe.instructions.length} {recipe.instructions.length === 1 ? "step" : "steps"}</li>
+            <li>
+              <a href="#comments" className="hover:text-white">
+                {recipe.commentCount} {recipe.commentCount === 1 ? "comment" : "comments"}
+              </a>
+            </li>
           </ul>
         </header>
 
@@ -193,6 +210,8 @@ const Recipe = () => {
             </ol>
           </section>
         </div>
+
+        <Comments recipe={recipe} />
       </article>
     </Shell>
   );
