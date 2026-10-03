@@ -48,7 +48,7 @@ const About = () => {
 
   return (
     <div className="max-w-6xl">
-      <Seo title="About me" description={`${name}. ${tagline}`} image={photo} />
+      <Seo title="About me" description={tagline ? `${name}. ${tagline}` : name} image={photo} />
       {/* HERO */}
       <header className="flex flex-col gap-6 sm:flex-row sm:items-center">
         {photo ? (
@@ -60,7 +60,7 @@ const About = () => {
         )}
         <div>
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">{name}</h1>
-          <p className="mt-1 text-xl text-gray-600">{tagline}</p>
+          {tagline && <p className="mt-1 text-xl text-gray-600">{tagline}</p>}
           {location && <p className="mt-1 text-sm text-gray-500">{location}</p>}
           <ul className="mt-4 flex flex-wrap gap-2">
             {facts.map((f) => <Chip key={f}>{f}</Chip>)}
@@ -77,7 +77,7 @@ const About = () => {
         )}
         {links.resume && (
           <a href={links.resume} download className={`${linkButton} border-gray-900 bg-gray-900 text-white hover:bg-gray-800`}>
-            <DownloadIcon /> Download résumé
+            <DownloadIcon /> Download resume
           </a>
         )}
       </div>

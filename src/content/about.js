@@ -6,7 +6,8 @@
 
 export const about = {
   name: "Tristan Mikiewicz",
-  tagline: "In The Flesh",
+  //Optional one-liner under the name. null hides it.
+  tagline: null,
   //Drop a headshot in public/ and set this to "/tristan.jpg". Until then the
   //page shows initials.
   photo: "/tristan.jpg",

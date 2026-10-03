@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 
+/* Tailwind v4's preflight leaves buttons with the default arrow cursor.
+   Every clickable button on the site (like, favorite, post comment, log in,
+   log out, delete, tabs) should read as clickable; disabled ones keep the
+   arrow so a greyed-out button does not invite a click. */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 /* Landing page photo wall. Each column holds two copies of its images, so
    moving by 50% of the column's height lands exactly on the second copy. */
 @keyframes gallery-up {

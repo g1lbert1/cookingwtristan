@@ -113,11 +113,11 @@ Required Auth0 Action section in the cookingwdatabase README.
 
 ### About / CV page (09/07/26)
 * `/about` is a full CV: intro, why the site exists, experience, projects,
-  education, skills, and contact, with Email / GitHub / LinkedIn / résumé
+  education, skills, and contact, with Email / GitHub / LinkedIn / resume
   buttons.
 * All copy is data in `src/content/about.js`. Edit that file to update the
   CV; `src/pages/About.jsx` is layout only. Set `photo` there once a headshot
   is in `public/`, and `experience[].period` to show dates.
-* The résumé PDF in `public/` is gitignored on purpose. A deployed build will
+* The resume PDF in `public/` is gitignored on purpose. A deployed build will
   not have it unless it is uploaded separately; set `links.resume` to `null`
   to hide the download button instead.
