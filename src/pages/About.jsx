@@ -77,7 +77,7 @@ const About = () => {
         )}
         {links.resume && (
           <a href={links.resume} download className={`${linkButton} border-gray-900 bg-gray-900 text-white hover:bg-gray-800`}>
-            <DownloadIcon /> Download résumé
+            <DownloadIcon /> Download resume
           </a>
         )}
       </div>
