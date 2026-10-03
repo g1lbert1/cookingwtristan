@@ -19,6 +19,39 @@ export const UPDATE_RECIPE = gql`
   }
 `;
 
+//Each returns the recipe with fresh likeCount and viewer flags. Apollo keys
+//Recipe objects by _id, so every card and page showing it updates in place.
+const REACTION_RESULT = `
+  _id
+  likeCount
+  likedByMe
+  favoritedByMe
+`;
+
+export const LIKE_RECIPE = gql`
+  mutation LikeRecipe($_id: String!) {
+    likeRecipe(_id: $_id) { ${REACTION_RESULT} }
+  }
+`;
+
+export const UNLIKE_RECIPE = gql`
+  mutation UnlikeRecipe($_id: String!) {
+    unlikeRecipe(_id: $_id) { ${REACTION_RESULT} }
+  }
+`;
+
+export const FAVORITE_RECIPE = gql`
+  mutation FavoriteRecipe($_id: String!) {
+    favoriteRecipe(_id: $_id) { ${REACTION_RESULT} }
+  }
+`;
+
+export const UNFAVORITE_RECIPE = gql`
+  mutation UnfavoriteRecipe($_id: String!) {
+    unfavoriteRecipe(_id: $_id) { ${REACTION_RESULT} }
+  }
+`;
+
 export const DELETE_RECIPE = gql`
   mutation DeleteRecipe($_id: String!) {
     deleteRecipe(_id: $_id)

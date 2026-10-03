@@ -5,6 +5,7 @@ import { getErrorMessage, isNotFound } from "../graphql/errors";
 import { useMe } from "../hooks/useMe";
 import { imageSrc } from "../cloudinary";
 import Seo from "../components/Seo";
+import { FavoriteButton, LikeButton } from "../components/ReactionButtons";
 import { SITE_AUTHOR } from "../content/site";
 
 //Blog-style recipe page. Full-bleed navy background (#001357) with white
@@ -124,10 +125,12 @@ const Recipe = () => {
 
           <p className="mt-3 text-white/70">
             by <span className="font-medium text-white">{recipe.author?.username ?? SITE_AUTHOR}</span>
-            {recipe.likeCount > 0 && (
-              <span> · {recipe.likeCount} {recipe.likeCount === 1 ? "like" : "likes"}</span>
-            )}
           </p>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <LikeButton recipe={recipe} tone="dark" />
+            <FavoriteButton recipe={recipe} tone="dark" />
+          </div>
 
           <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
             <li className="flex items-center gap-2">

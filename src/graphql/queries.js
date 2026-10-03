@@ -18,11 +18,34 @@ export const RECIPE_FIELDS = gql`
     }
     instructions
     likeCount
+    likedByMe
+    favoritedByMe
     createdAt
     author {
       _id
       username
       avatar
+    }
+  }
+`;
+
+//What a card in any grid needs: the recipes page and the profile tabs.
+export const RECIPE_CARD_FIELDS = gql`
+  fragment RecipeCardFields on Recipe {
+    _id
+    title
+    slug
+    prepTime
+    imageUrl
+    likeCount
+    likedByMe
+    favoritedByMe
+    author {
+      _id
+      username
+    }
+    ingredients {
+      name
     }
   }
 `;
@@ -41,20 +64,29 @@ export const GET_ME = gql`
 `;
 
 export const GET_RECIPES = gql`
+  ${RECIPE_CARD_FIELDS}
   query GetRecipes {
     recipes {
+      ...RecipeCardFields
+    }
+  }
+`;
+
+//The profile tabs. Fetched only on the profile page; the reaction buttons
+//evict these fields from the cached User after a change so the tabs refetch.
+export const GET_MY_RECIPES = gql`
+  ${RECIPE_CARD_FIELDS}
+  query GetMyRecipes {
+    me {
       _id
-      title
-      slug
-      prepTime
-      imageUrl
-      likeCount
-      author {
-        _id
-        username
+      recipes {
+        ...RecipeCardFields
       }
-      ingredients {
-        name
+      likedRecipes {
+        ...RecipeCardFields
+      }
+      favoriteRecipes {
+        ...RecipeCardFields
       }
     }
   }
