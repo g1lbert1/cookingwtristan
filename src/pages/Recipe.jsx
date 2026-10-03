@@ -6,6 +6,7 @@ import { useMe } from "../hooks/useMe";
 import { imageSrc } from "../cloudinary";
 import Seo from "../components/Seo";
 import { FavoriteButton, LikeButton } from "../components/ReactionButtons";
+import Comments from "../components/Comments";
 import { SITE_AUTHOR } from "../content/site";
 
 //Blog-style recipe page. Full-bleed navy background (#001357) with white
@@ -138,6 +139,11 @@ const Recipe = () => {
             </li>
             <li>{recipe.ingredients.length} {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}</li>
             <li>{recipe.instructions.length} {recipe.instructions.length === 1 ? "step" : "steps"}</li>
+            <li>
+              <a href="#comments" className="hover:text-white">
+                {recipe.commentCount} {recipe.commentCount === 1 ? "comment" : "comments"}
+              </a>
+            </li>
           </ul>
         </header>
 
@@ -204,6 +210,8 @@ const Recipe = () => {
             </ol>
           </section>
         </div>
+
+        <Comments recipe={recipe} />
       </article>
     </Shell>
   );

@@ -35,6 +35,9 @@ export const RecipeCard = ({ recipe }) => {
           <p className="mt-auto pt-3 text-sm text-gray-600">
             {formatPrepTime(recipe.prepTime)} · {recipe.ingredients.length}{" "}
             {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}
+            {recipe.commentCount > 0 && (
+              <> · {recipe.commentCount} {recipe.commentCount === 1 ? "comment" : "comments"}</>
+            )}
           </p>
         </div>
       </Link>

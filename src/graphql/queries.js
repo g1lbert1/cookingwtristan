@@ -20,7 +20,22 @@ export const RECIPE_FIELDS = gql`
     likeCount
     likedByMe
     favoritedByMe
+    commentCount
     createdAt
+    author {
+      _id
+      username
+      avatar
+    }
+  }
+`;
+
+export const COMMENT_FIELDS = gql`
+  fragment CommentFields on Comment {
+    _id
+    body
+    createdAt
+    canDelete
     author {
       _id
       username
@@ -40,6 +55,7 @@ export const RECIPE_CARD_FIELDS = gql`
     likeCount
     likedByMe
     favoritedByMe
+    commentCount
     author {
       _id
       username
@@ -87,6 +103,22 @@ export const GET_MY_RECIPES = gql`
       }
       favoriteRecipes {
         ...RecipeCardFields
+      }
+    }
+  }
+`;
+
+//The thread, loaded by the Comments section below the recipe. It lands on
+//the same cached Recipe object as GET_RECIPE_BY_SLUG, so adding or deleting
+//a comment updates commentCount on the page and the cards together.
+export const GET_RECIPE_COMMENTS = gql`
+  ${COMMENT_FIELDS}
+  query GetRecipeComments($slug: String!) {
+    getRecipeBySlug(slug: $slug) {
+      _id
+      commentCount
+      comments {
+        ...CommentFields
       }
     }
   }

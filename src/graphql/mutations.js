@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { RECIPE_FIELDS } from "./queries";
+import { COMMENT_FIELDS, RECIPE_FIELDS } from "./queries";
 
 export const CREATE_RECIPE = gql`
   ${RECIPE_FIELDS}
@@ -49,6 +49,21 @@ export const FAVORITE_RECIPE = gql`
 export const UNFAVORITE_RECIPE = gql`
   mutation UnfavoriteRecipe($_id: String!) {
     unfavoriteRecipe(_id: $_id) { ${REACTION_RESULT} }
+  }
+`;
+
+export const ADD_COMMENT = gql`
+  ${COMMENT_FIELDS}
+  mutation AddComment($recipeId: String!, $body: String!) {
+    addComment(recipeId: $recipeId, body: $body) {
+      ...CommentFields
+    }
+  }
+`;
+
+export const DELETE_COMMENT = gql`
+  mutation DeleteComment($_id: String!) {
+    deleteComment(_id: $_id)
   }
 `;
 
