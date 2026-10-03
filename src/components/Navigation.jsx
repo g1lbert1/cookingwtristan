@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavLink } from "react-router-dom";
 
-//Layout, left to right: Home | (spacer) | Recipes | Profile | About (person icon).
+//Layout, left to right: Home | (spacer) | Recipes | Profile (person icon) | About ("TM").
 //Profile doubles as the login button when nobody is signed in, so the nav
 //keeps the same shape in both states.
 
@@ -59,8 +59,8 @@ const Navigation = () => {
           </NavLink>
 
           {isAuthenticated ? (
-            <NavLink to="/profile" className={linkClass}>
-              Profile
+            <NavLink to="/profile" className={linkClass} aria-label="Profile" title="Profile">
+              <PersonIcon />
             </NavLink>
           ) : (
             <button
@@ -68,18 +68,20 @@ const Navigation = () => {
               onClick={login}
               disabled={isLoading}
               className={`${linkClass({ isActive: false })} disabled:opacity-50`}
+              aria-label="Log in"
+              title="Log in"
             >
-              Log in
+              <PersonIcon />
             </button>
           )}
 
           <NavLink
             to="/about"
-            className={linkClass}
+            className={(state) => `${linkClass(state)} font-bold tracking-wide`}
             aria-label="About me"
             title="About me"
           >
-            <PersonIcon />
+            TM
           </NavLink>
         </div>
       </nav>

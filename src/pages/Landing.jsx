@@ -33,9 +33,6 @@ const Landing = () => (
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
           Cooking with Tristan
         </h1>
-        <p className="mt-3 text-lg text-white/90">
-          In the flesh
-        </p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-3">
