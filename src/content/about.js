@@ -6,11 +6,10 @@
 
 export const about = {
   name: "Tristan Mikiewicz",
-  //Optional one-liner under the name. null hides it.
-  tagline: null,
+  tagline: "In The Flesh",
   //Drop a headshot in public/ and set this to "/tristan.jpg". Until then the
   //page shows initials.
-  photo: "/tristan.jpg",
+  photo: null,
   location: "New Jersey",
 
   //Short facts shown as chips under the name.
@@ -25,13 +24,9 @@ export const about = {
     email: "tristanmikie@gmail.com",
     github: "https://github.com/g1lbert1",
     linkedin: "https://linkedin.com/in/tristan-mikiewicz",
-    //Hosted on Cloudinary as an image-type asset (what the Media Library
-    //makes of an uploaded PDF), hence the .pdf.pdf: public id plus format.
-    //No version segment, so a Replace in the console shows up here without
-    //a code change. fl_attachment:<name> makes browsers download it under
-    //that filename instead of opening it inline. Set to null to hide the
-    //button.
-    resume: "https://res.cloudinary.com/unkkf9qr/image/upload/fl_attachment:Mikiewicz-Tristan-Resume/cookingwtristan/Mikiewicz-Tristan-Resume.pdf.pdf",
+    //Served from public/. The file is gitignored, so on a deployed build it
+    //has to be uploaded separately (or set this to null to hide the button).
+    resume: "/Mikiewicz-Tristan-Updated-Res.pdf",
   },
 
   story: [
