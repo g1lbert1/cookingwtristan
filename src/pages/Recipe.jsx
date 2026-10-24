@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client/react";
 import { GET_RECIPE_BY_SLUG } from "../graphql/queries";
@@ -7,12 +8,24 @@ import { imageSrc } from "../cloudinary";
 import Seo from "../components/Seo";
 import { FavoriteButton, LikeButton } from "../components/ReactionButtons";
 import Comments from "../components/Comments";
+import AuthorLink from "../components/AuthorLink";
 import { ArrowLeftIcon } from "../components/Icons";
-import { SITE_AUTHOR } from "../content/site";
+import { accentColor } from "../recipeOptions";
 
-//Blog-style recipe page on the black page: white text, the ingredients in a
-//plum panel. The photo is the recipe's imageUrl, uploaded from the recipe
-//form.
+//Recipe page on the black page: white text, the ingredients in a panel.
+//The recipe's accent (a curated dark tone, plum by default) is set once as
+//--accent on the page and colours the ingredients panel and step numbers.
+//The layout decides the order of the same pieces:
+//  CLASSIC   header, photo, story, ingredients beside the steps
+//  EDITORIAL photo with the title over it, then one wide reading column
+//  GALLERY   every photo first in a mosaic, then the recipe
+//Recipes without a story, extra photos, layout or accent render exactly as
+//they did before those existed.
+//
+//The Markdown renderer is the one heavy dependency here, so it loads only
+//for recipes that have a story; the plain text shows until it arrives.
+
+const Markdown = lazy(() => import("../components/Markdown"));
 
 const UNIT_LABELS = {
   GRAMS: "g",
@@ -63,11 +76,254 @@ const ClockIcon = () => (
   </svg>
 );
 
-const Shell = ({ children }) => (
-  <div className="flex-1 text-white">
+const Shell = ({ children, style }) => (
+  <div className="flex-1 text-white" style={style}>
     <div className="mx-auto max-w-5xl px-6 py-10 sm:py-14">{children}</div>
   </div>
 );
+
+/* ---------- the pieces every layout is built from ---------- */
+
+const TopNav = ({ recipe, canEdit }) => (
+  <nav className="mb-6 flex items-center justify-between text-sm">
+    <Link to="/recipes" className="inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white">
+      <ArrowLeftIcon />
+      All recipes
+    </Link>
+    {canEdit && (
+      <Link to={`/recipes/${recipe.slug}/edit`} className="btn btn-secondary btn-sm">
+        Edit
+      </Link>
+    )}
+  </nav>
+);
+
+const Title = ({ recipe, className = "" }) => (
+  <h1 className={`font-display leading-none tracking-tight text-balance ${className}`}>{recipe.title}</h1>
+);
+
+const Byline = ({ recipe, className = "mt-4 text-white/70" }) => (
+  <p className={className}>
+    by <AuthorLink author={recipe.author} className="font-medium text-white" />
+  </p>
+);
+
+const Reactions = ({ recipe, className = "mt-5" }) => (
+  <div className={`flex flex-wrap items-center gap-3 ${className}`}>
+    <LikeButton recipe={recipe} tone="dark" />
+    <FavoriteButton recipe={recipe} tone="dark" />
+  </div>
+);
+
+const Meta = ({ recipe, className = "mt-5" }) => (
+  <ul className={`flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80 ${className}`}>
+    <li className="flex items-center gap-2">
+      <ClockIcon /> {formatPrepTime(recipe.prepTime)}
+    </li>
+    <li>{recipe.ingredients.length} {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}</li>
+    <li>{recipe.instructions.length} {recipe.instructions.length === 1 ? "step" : "steps"}</li>
+    <li>
+      <a href="#comments" className="hover:text-white">
+        {recipe.commentCount} {recipe.commentCount === 1 ? "comment" : "comments"}
+      </a>
+    </li>
+  </ul>
+);
+
+const Placeholder = ({ className = "aspect-[16/9]" }) => (
+  <div className={`flex w-full items-center justify-center rounded-xl border border-dashed border-white/25 bg-white/5 text-sm text-white/50 ${className}`}>
+    Photo of the finished dish goes here
+  </div>
+);
+
+const Intro = ({ recipe, className = "mt-10 max-w-3xl text-lg" }) =>
+  recipe.content ? <p className={`leading-relaxed text-white/90 ${className}`}>{recipe.content}</p> : null;
+
+const Story = ({ recipe, className = "mt-10 max-w-3xl" }) =>
+  recipe.story ? (
+    <section className={className} aria-label="Story">
+      <Suspense fallback={<p className="whitespace-pre-wrap leading-relaxed text-white/90">{recipe.story}</p>}>
+        <Markdown>{recipe.story}</Markdown>
+      </Suspense>
+    </section>
+  ) : null;
+
+//The extra photos, numbered after the cover in the alt text.
+const GalleryGrid = ({ recipe, className = "mt-3 sm:grid-cols-4" }) =>
+  recipe.gallery.length > 0 ? (
+    <ul className={`grid grid-cols-2 gap-3 ${className}`}>
+      {recipe.gallery.map((url, i) => (
+        <li key={url}>
+          <img
+            src={imageSrc(url, { width: 800 })}
+            alt={`${recipe.title}, photo ${i + 2}`}
+            loading="lazy"
+            className="aspect-square w-full rounded-xl object-cover"
+          />
+        </li>
+      ))}
+    </ul>
+  ) : null;
+
+const Ingredients = ({ recipe, columns = false, className = "" }) => (
+  <aside className={className}>
+    <h2 className="font-display text-3xl">Ingredients</h2>
+    <ul className={`panel mt-4 overflow-hidden bg-(--accent) ${columns ? "sm:grid sm:grid-cols-2" : ""}`}>
+      {recipe.ingredients.map((ing, i) => {
+        const quantity = formatQuantity(ing);
+        return (
+          <li key={i} className="flex items-baseline gap-3 border-b border-white/15 px-4 py-3 last:border-b-0">
+            {quantity && (
+              <span className="w-20 shrink-0 text-sm font-semibold tabular-nums text-white/90">
+                {quantity}
+              </span>
+            )}
+            <span>
+              {ing.name}
+              {ing.notes && <span className="text-white/60">, {ing.notes}</span>}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  </aside>
+);
+
+const Steps = ({ recipe, className = "" }) => (
+  <section className={className}>
+    <h2 className="font-display text-3xl">Instructions</h2>
+    <ol className="mt-4 space-y-6">
+      {recipe.instructions.map((step, i) => (
+        <li key={i} className="flex gap-4">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-(--accent)">
+            {i + 1}
+          </span>
+          <p className="pt-1 leading-relaxed text-white/90">{step}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+);
+
+/* ---------- layouts ---------- */
+
+//Not sticky on purpose: with long ingredient notes the panel is taller than
+//the viewport and a pinned panel's bottom would be unreachable until the
+//instructions ran out.
+const SideBySide = ({ recipe }) => (
+  <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_2fr]">
+    <Ingredients recipe={recipe} />
+    <Steps recipe={recipe} />
+  </div>
+);
+
+const ClassicLayout = ({ recipe, canEdit }) => {
+  const image = imageSrc(recipe.imageUrl);
+  return (
+    <>
+      <header className="max-w-3xl">
+        <TopNav recipe={recipe} canEdit={canEdit} />
+        <Title recipe={recipe} className="text-5xl sm:text-6xl md:text-7xl" />
+        <Byline recipe={recipe} />
+        <Reactions recipe={recipe} />
+        <Meta recipe={recipe} />
+      </header>
+
+      <figure className="mt-10">
+        {image ? (
+          <img src={image} alt={`${recipe.title}, plated`} className="max-h-[560px] w-full rounded-xl object-cover object-center" />
+        ) : (
+          <Placeholder />
+        )}
+      </figure>
+      <GalleryGrid recipe={recipe} />
+
+      <Intro recipe={recipe} />
+      <Story recipe={recipe} />
+      <SideBySide recipe={recipe} />
+    </>
+  );
+};
+
+const EditorialLayout = ({ recipe, canEdit }) => {
+  const image = imageSrc(recipe.imageUrl, { width: 2000 });
+  return (
+    <>
+      <TopNav recipe={recipe} canEdit={canEdit} />
+      <header className="relative isolate overflow-hidden rounded-2xl bg-(--accent)">
+        {image && (
+          <>
+            <img src={image} alt={`${recipe.title}, plated`} className="aspect-[4/3] w-full object-cover sm:aspect-[21/9]" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/45 to-black/10" aria-hidden="true" />
+          </>
+        )}
+        <div className={image ? "absolute inset-x-0 bottom-0 p-6 sm:p-10" : "p-6 sm:p-10"}>
+          <Title recipe={recipe} className="text-5xl sm:text-6xl md:text-7xl" />
+          <Byline recipe={recipe} className="mt-3 text-white/80" />
+        </div>
+      </header>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
+        <Reactions recipe={recipe} className="mt-0" />
+        <Meta recipe={recipe} className="mt-0" />
+      </div>
+
+      <div className="mx-auto mt-12 max-w-3xl">
+        <Intro recipe={recipe} className="mt-0 text-xl" />
+        <Story recipe={recipe} className={recipe.content ? "mt-8" : "mt-0"} />
+        <GalleryGrid recipe={recipe} className="mt-10 sm:grid-cols-2" />
+        <Ingredients recipe={recipe} columns className="mt-12" />
+        <Steps recipe={recipe} className="mt-12" />
+      </div>
+    </>
+  );
+};
+
+//Cover first and largest, the rest filling in around it. One photo alone is
+//shown the classic way rather than as a lopsided mosaic.
+const Mosaic = ({ recipe }) => {
+  const photos = [recipe.imageUrl, ...recipe.gallery].filter(Boolean);
+  if (photos.length === 0) return <Placeholder />;
+  if (photos.length === 1) {
+    return <img src={imageSrc(photos[0])} alt={`${recipe.title}, plated`} className="max-h-[560px] w-full rounded-xl object-cover object-center" />;
+  }
+  return (
+    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {photos.map((url, i) => (
+        <li key={url} className={i === 0 ? "col-span-2 row-span-2" : ""}>
+          <img
+            src={imageSrc(url, { width: i === 0 ? 1600 : 800 })}
+            alt={i === 0 ? `${recipe.title}, plated` : `${recipe.title}, photo ${i + 1}`}
+            loading={i === 0 ? "eager" : "lazy"}
+            className="aspect-square h-full w-full rounded-xl object-cover"
+          />
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+const GalleryLayout = ({ recipe, canEdit }) => (
+  <>
+    <TopNav recipe={recipe} canEdit={canEdit} />
+    <Mosaic recipe={recipe} />
+    <header className="mt-10 max-w-3xl">
+      <Title recipe={recipe} className="text-5xl sm:text-6xl md:text-7xl" />
+      <Byline recipe={recipe} />
+      <Reactions recipe={recipe} />
+      <Meta recipe={recipe} />
+    </header>
+    <Intro recipe={recipe} />
+    <Story recipe={recipe} />
+    <SideBySide recipe={recipe} />
+  </>
+);
+
+const LAYOUTS = {
+  CLASSIC: ClassicLayout,
+  EDITORIAL: EditorialLayout,
+  GALLERY: GalleryLayout,
+};
 
 const Recipe = () => {
   const { slug } = useParams();
@@ -97,124 +353,17 @@ const Recipe = () => {
   }
 
   const recipe = data.getRecipeBySlug;
-  const image = imageSrc(recipe.imageUrl);
+  const Layout = LAYOUTS[recipe.layout] ?? ClassicLayout;
 
   return (
-    <Shell>
+    <Shell style={{ "--accent": accentColor(recipe.accent) }}>
       <Seo
         title={recipe.title}
         description={recipe.content || `${recipe.title}: ingredients and step-by-step instructions.`}
         image={imageSrc(recipe.imageUrl, { width: 1200 })}
       />
       <article>
-        {/* HEADER */}
-        <header className="max-w-3xl">
-          <nav className="mb-6 flex items-center justify-between text-sm">
-            <Link to="/recipes" className="inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white">
-              <ArrowLeftIcon />
-              All recipes
-            </Link>
-            {canManage(recipe) && (
-              <Link
-                to={`/recipes/${recipe.slug}/edit`}
-                className="btn btn-secondary btn-sm"
-              >
-                Edit
-              </Link>
-            )}
-          </nav>
-
-          <h1 className="font-display text-5xl leading-none tracking-tight text-balance sm:text-6xl md:text-7xl">
-            {recipe.title}
-          </h1>
-
-          <p className="mt-4 text-white/70">
-            by <span className="font-medium text-white">{recipe.author?.username ?? SITE_AUTHOR}</span>
-          </p>
-
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <LikeButton recipe={recipe} tone="dark" />
-            <FavoriteButton recipe={recipe} tone="dark" />
-          </div>
-
-          <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
-            <li className="flex items-center gap-2">
-              <ClockIcon /> {formatPrepTime(recipe.prepTime)}
-            </li>
-            <li>{recipe.ingredients.length} {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}</li>
-            <li>{recipe.instructions.length} {recipe.instructions.length === 1 ? "step" : "steps"}</li>
-            <li>
-              <a href="#comments" className="hover:text-white">
-                {recipe.commentCount} {recipe.commentCount === 1 ? "comment" : "comments"}
-              </a>
-            </li>
-          </ul>
-        </header>
-
-        {/* PHOTO */}
-        <figure className="mt-10">
-          {image ? (
-            <img
-              src={image}
-              alt={`${recipe.title}, plated`}
-              className="max-h-[560px] w-full rounded-xl object-cover object-center"
-            />
-          ) : (
-            <div className="flex aspect-[16/9] w-full items-center justify-center rounded-xl border border-dashed border-white/25 bg-white/5 text-sm text-white/50">
-              Photo of the finished dish goes here
-            </div>
-          )}
-        </figure>
-
-        {/* INTRO */}
-        {recipe.content && (
-          <p className="mt-10 max-w-3xl text-lg leading-relaxed text-white/90">
-            {recipe.content}
-          </p>
-        )}
-
-        {/* BODY */}
-        <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_2fr]">
-          {/* Not sticky on purpose: with long ingredient notes the panel is
-              taller than the viewport and a pinned panel's bottom would be
-              unreachable until the instructions ran out. */}
-          <aside>
-            <h2 className="font-display text-3xl">Ingredients</h2>
-            <ul className="panel mt-4 divide-y divide-white/15 overflow-hidden">
-              {recipe.ingredients.map((ing, i) => {
-                const quantity = formatQuantity(ing);
-                return (
-                  <li key={i} className="flex items-baseline gap-3 px-4 py-3">
-                    {quantity && (
-                      <span className="w-20 shrink-0 text-sm font-semibold tabular-nums text-white/90">
-                        {quantity}
-                      </span>
-                    )}
-                    <span>
-                      {ing.name}
-                      {ing.notes && <span className="text-white/60">, {ing.notes}</span>}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </aside>
-
-          <section>
-            <h2 className="font-display text-3xl">Instructions</h2>
-            <ol className="mt-4 space-y-6">
-              {recipe.instructions.map((step, i) => (
-                <li key={i} className="flex gap-4">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-plum">
-                    {i + 1}
-                  </span>
-                  <p className="pt-1 leading-relaxed text-white/90">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </div>
-
+        <Layout recipe={recipe} canEdit={canManage(recipe)} />
         <Comments recipe={recipe} />
       </article>
     </Shell>

@@ -1,50 +1,18 @@
 import { useRef, useState } from "react";
-import { useMutation } from "@apollo/client/react";
-import { CREATE_IMAGE_UPLOAD_SIGNATURE } from "../graphql/mutations";
 import { getErrorMessage } from "../graphql/errors";
 import { imageSrc } from "../cloudinary";
+import { ACCEPTED_TYPES, useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
 
-//Photo picker for the recipe form. The file goes from the browser straight
-//to Cloudinary: we ask our API for a signed set of upload fields (signed-in
-//users; the secret stays on the server), post the file plus those fields
-//verbatim to Cloudinary, and hand the returned URL to the form. The form
-//stores only the URL.
-//
-//The checks below are for a quick, friendly error. The real limits are
-//inside the signature (allowed formats, size-capping transformation) and
-//Cloudinary enforces them whatever the browser sends.
-
-//Cloudinary's per-image ceiling on the free plan.
-const MAX_BYTES = 10 * 1024 * 1024;
-//Mirrors the server's allowed_formats. No SVG, no GIF.
-const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "image/avif"];
+//The recipe's cover photo. The form stores only the URL; the upload itself
+//is in hooks/useCloudinaryUpload.js and shared with GalleryUpload.
 
 const buttonClass = "btn btn-secondary btn-sm";
-
-const uploadToCloudinary = async (file, sig) => {
-  const body = new FormData();
-  body.append("file", file);
-  body.append("api_key", sig.apiKey);
-  //Every signed field, exactly as issued. Changing or dropping one breaks
-  //the signature and Cloudinary refuses the upload.
-  for (const { name, value } of sig.fields) body.append(name, value);
-
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`, {
-    method: "POST",
-    body,
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(json?.error?.message || `Upload failed (${res.status}).`);
-  }
-  return json.secure_url;
-};
 
 export default function ImageUpload({ value, onChange, disabled }) {
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
-  const [getSignature] = useMutation(CREATE_IMAGE_UPLOAD_SIGNATURE);
+  const upload = useCloudinaryUpload();
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
@@ -53,20 +21,9 @@ export default function ImageUpload({ value, onChange, disabled }) {
     if (!file) return;
 
     setError(null);
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      setError("Please choose a JPG, PNG, WebP, HEIC or AVIF photo.");
-      return;
-    }
-    if (file.size > MAX_BYTES) {
-      setError("That photo is over 10 MB. Please pick a smaller one.");
-      return;
-    }
-
     setUploading(true);
     try {
-      const { data } = await getSignature();
-      const url = await uploadToCloudinary(file, data.createImageUploadSignature);
-      onChange(url);
+      onChange(await upload(file));
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
