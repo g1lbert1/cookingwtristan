@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Recipes from './pages/Recipes';
 import Recipe from './pages/Recipe';
 import Profile from './pages/Profile';
+import PublicProfile from './pages/PublicProfile';
 import About from './pages/About';
 import CreateRecipe from './pages/CreateRecipe.jsx';
 import EditRecipe from './pages/EditRecipe.jsx';
@@ -50,6 +51,7 @@ const App = () => {
             <Route path="/recipes/new" element={<ProtectedCreateRecipe />} />
             <Route path="/recipes/:slug/edit" element={<ProtectedEditRecipe />} />
             <Route path="/profile" element={<ProtectedProfile />} />
+            <Route path="/u/:username" element={<PublicProfile />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin/createRecipe" element={<Navigate to="/recipes/new" replace />} />
             <Route path="/admin/editRecipe/:slug" element={<LegacyEditRedirect />} />

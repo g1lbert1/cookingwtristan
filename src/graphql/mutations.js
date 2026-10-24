@@ -73,6 +73,16 @@ export const DELETE_RECIPE = gql`
   }
 `;
 
+//Returns the renamed User; Apollo merges it into the cached `me` by _id.
+export const UPDATE_USERNAME = gql`
+  mutation UpdateUsername($username: String!) {
+    updateUsername(username: $username) {
+      _id
+      username
+    }
+  }
+`;
+
 //Any signed-in user. Everything the browser needs to upload one photo straight to
 //Cloudinary; see components/ImageUpload.jsx.
 export const CREATE_IMAGE_UPLOAD_SIGNATURE = gql`

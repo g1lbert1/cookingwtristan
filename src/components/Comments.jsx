@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client/react";
 import { GET_RECIPE_COMMENTS } from "../graphql/queries";
 import { ADD_COMMENT, DELETE_COMMENT } from "../graphql/mutations";
 import { getErrorMessage } from "../graphql/errors";
+import AuthorLink from "./AuthorLink";
 
 //The thread under a recipe, on the recipe page's black background. The list
 //is its own query so the recipe itself renders before the comments arrive.
@@ -212,7 +213,7 @@ export default function Comments({ recipe }) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                   <p className="text-sm">
-                    <span className="font-medium">{c.author?.username ?? "Deleted user"}</span>
+                    <AuthorLink author={c.author} fallback="Deleted user" className="font-medium" />
                     <time dateTime={c.createdAt} title={new Date(c.createdAt).toLocaleString()} className="ml-2 text-white/50">
                       {timeAgo(c.createdAt)}
                     </time>

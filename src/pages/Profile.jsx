@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useQuery } from "@apollo/client/react";
-import { GET_ME, GET_MY_RECIPES } from "../graphql/queries";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client/react";
+import { CHECK_USERNAME, GET_ME, GET_MY_RECIPES } from "../graphql/queries";
+import { UPDATE_USERNAME } from "../graphql/mutations";
+import { getErrorMessage } from "../graphql/errors";
 import { RecipeGrid } from "../components/RecipeCard";
 import Seo from "../components/Seo";
+import { USERNAME_MAX, profilePath, usernameShapeProblem } from "../usernameRules";
 
 const TABS = [
   {
@@ -112,6 +115,128 @@ const HeaderSkeleton = () => (
   </div>
 );
 
+const PencilIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </svg>
+);
+
+//Inline rename. The shape rules run locally as the user types; everything
+//else (reserved words, profanity, who already has it) is asked of the
+//server after a short pause, and the server runs it all again on save.
+const UsernameEditor = ({ me, onDone }) => {
+  const client = useApolloClient();
+  const [value, setValue] = useState(me.username);
+  //The server's answer for one exact name; stale answers are ignored.
+  const [remote, setRemote] = useState(null); // { forName, available, message }
+  const [error, setError] = useState(null);
+  const [updateUsername, { loading }] = useMutation(UPDATE_USERNAME, {
+    update(cache, { data }) {
+      const updated = data?.updateUsername;
+      if (!updated) return;
+      //`me` updates by _id on its own. The bylines on cards and comments
+      //come from Author objects, a separate type keyed by the same id.
+      cache.modify({
+        id: cache.identify({ __typename: "Author", _id: updated._id }),
+        fields: { username: () => updated.username },
+      });
+    },
+  });
+
+  const name = value.trim();
+  const unchanged = name === me.username;
+  const shapeProblem = unchanged ? null : usernameShapeProblem(name);
+  //What to show for the current name: the local rule, the server's answer
+  //for this exact name, or "checking" while that answer is on its way.
+  const check = shapeProblem
+    ? { available: false, message: shapeProblem }
+    : remote?.forName === name
+      ? remote
+      : null;
+  const pending = !unchanged && !shapeProblem && check === null;
+
+  useEffect(() => {
+    if (unchanged || shapeProblem) return undefined;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await client.query({
+          query: CHECK_USERNAME,
+          variables: { username: name },
+          fetchPolicy: "network-only",
+        });
+        if (!cancelled) setRemote({ forName: name, ...data.checkUsername });
+      } catch {
+        //The save will report anything the check could not.
+        if (!cancelled) setRemote({ forName: name, available: true, message: null });
+      }
+    }, 350);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [name, unchanged, shapeProblem, client]);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (unchanged) {
+      onDone(null);
+      return;
+    }
+    try {
+      const { data } = await updateUsername({ variables: { username: name } });
+      onDone(`You're now ${data.updateUsername.username}.`);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
+  const blocked = loading || unchanged || check?.available === false;
+
+  return (
+    <form onSubmit={submit} className="mt-1 max-w-md">
+      <label htmlFor="profile-username" className="sr-only">New username</label>
+      <div className="flex flex-wrap gap-2">
+        <input
+          id="profile-username"
+          className="field flex-1 text-base"
+          value={value}
+          maxLength={USERNAME_MAX}
+          autoFocus
+          autoComplete="off"
+          spellCheck={false}
+          aria-describedby="profile-username-hint"
+          aria-invalid={check?.available === false || undefined}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <button type="submit" className="btn btn-primary btn-sm" disabled={blocked}>
+          {loading ? "Saving..." : "Save"}
+        </button>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={() => onDone(null)} disabled={loading}>
+          Cancel
+        </button>
+      </div>
+      <p id="profile-username-hint" className="mt-2 min-h-5 text-sm" aria-live="polite">
+        {error ? (
+          <span role="alert" className="text-red-300">{error}</span>
+        ) : unchanged ? (
+          <span className="text-white/50">3 to 30 letters, numbers, underscores or hyphens.</span>
+        ) : pending ? (
+          <span className="text-white/50">Checking...</span>
+        ) : check?.available === false ? (
+          <span className="text-red-300">{check.message}</span>
+        ) : check?.available ? (
+          <span className="text-emerald-300">{check.message ?? `${name} is available.`}</span>
+        ) : (
+          <span className="text-white/50">3 to 30 letters, numbers, underscores or hyphens.</span>
+        )}
+      </p>
+    </form>
+  );
+};
+
 const Profile = () => {
   const { logout: auth0Logout } = useAuth0();
   //Usually already in the cache: App warms this query as soon as the session
@@ -119,6 +244,8 @@ const Profile = () => {
   //skeleton while it resolves, and the tabs' own query goes out alongside it
   //instead of waiting for this one to finish.
   const { data, loading, error } = useQuery(GET_ME);
+  const [editing, setEditing] = useState(false);
+  const [notice, setNotice] = useState(null);
 
   const logout = () =>
     auth0Logout({ logoutParams: { returnTo: window.location.origin } });
@@ -146,7 +273,11 @@ const Profile = () => {
   }
 
   const me = data?.me;
-  const joined = me?.createdAt ? new Date(me.createdAt).toLocaleDateString() : null;
+
+  const finishEditing = (message) => {
+    setEditing(false);
+    setNotice(message);
+  };
 
   return (
     <>
@@ -155,29 +286,50 @@ const Profile = () => {
         {!me ? (
           <HeaderSkeleton />
         ) : (
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-5">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex min-w-0 items-start gap-5">
               {me.avatar ? (
                 <img
                   src={me.avatar}
                   alt=""
-                  className="h-20 w-20 rounded-full border border-white/40 object-cover"
+                  className="h-20 w-20 shrink-0 rounded-full border border-white/40 object-cover"
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/40 bg-black/30 font-display text-3xl text-white">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border border-white/40 bg-black/30 font-display text-3xl text-white">
                   {me.username?.[0]?.toUpperCase() ?? "?"}
                 </div>
               )}
-              <div className="min-w-0">
-                <h1 className="font-display text-4xl leading-none tracking-tight text-white sm:text-5xl">
-                  {me.username}
-                </h1>
+              <div className="min-w-0 flex-1">
+                {editing ? (
+                  <UsernameEditor me={me} onDone={finishEditing} />
+                ) : (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <h1 className="font-display break-all text-4xl leading-none tracking-tight text-white sm:text-5xl">
+                      {me.username}
+                    </h1>
+                    <button
+                      type="button"
+                      onClick={() => { setNotice(null); setEditing(true); }}
+                      className="btn btn-secondary btn-sm"
+                      aria-label="Edit username"
+                    >
+                      <PencilIcon />
+                      Edit
+                    </button>
+                  </div>
+                )}
                 <p className="mt-2 truncate text-white/70">{me.email}</p>
                 <p className="mt-1 text-sm text-white/60">
                   <span className="capitalize">{me.role}</span>
-                  {joined && <> · Joined {joined}</>}
+                  {" · "}
+                  <Link to={profilePath(me.username)} className="underline decoration-white/40 underline-offset-4 hover:text-white hover:decoration-white">
+                    View your public profile
+                  </Link>
                 </p>
+                {notice && (
+                  <p role="status" className="mt-2 text-sm text-emerald-300">{notice}</p>
+                )}
               </div>
             </div>
 
