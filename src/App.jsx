@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Recipes from './pages/Recipes';
 import Recipe from './pages/Recipe';
 import Profile from './pages/Profile';
+import PublicProfile from './pages/PublicProfile';
 import About from './pages/About';
 import CreateRecipe from './pages/CreateRecipe.jsx';
 import EditRecipe from './pages/EditRecipe.jsx';
@@ -26,8 +27,8 @@ const LegacyEditRedirect = () => {
   return <Navigate to={`/recipes/${slug}/edit`} replace />;
 };
 
-//Most pages sit in a centered column on the light background. The landing
-//and recipe pages opt out and paint their own full-bleed backgrounds.
+//Most pages sit in a centered column on the black page. The landing and
+//recipe pages opt out and paint their own full-bleed backgrounds.
 const Contained = () => (
   <div className="mx-auto w-full max-w-7xl p-6">
     <Outlet />
@@ -40,7 +41,7 @@ const App = () => {
   useMe();
 
   return(
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-black text-white">
       <NavBar />
       <main className="flex flex-1 flex-col">
         <Routes>
@@ -50,6 +51,7 @@ const App = () => {
             <Route path="/recipes/new" element={<ProtectedCreateRecipe />} />
             <Route path="/recipes/:slug/edit" element={<ProtectedEditRecipe />} />
             <Route path="/profile" element={<ProtectedProfile />} />
+            <Route path="/u/:username" element={<PublicProfile />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin/createRecipe" element={<Navigate to="/recipes/new" replace />} />
             <Route path="/admin/editRecipe/:slug" element={<LegacyEditRedirect />} />

@@ -60,8 +60,8 @@ export default function CreateRecipe() {
   return (
     <>
       <Seo title="Share a recipe" noindex />
-      <h1 className="text-2xl font-bold text-gray-900">Share a recipe</h1>
-      <p className="mb-6 mt-2 text-gray-600">
+      <h1 className="font-display text-4xl leading-none tracking-tight text-white sm:text-5xl">Share a recipe</h1>
+      <p className="mb-8 mt-3 text-white/70">
         It goes straight onto the recipes page under your name.
       </p>
       <RecipeForm

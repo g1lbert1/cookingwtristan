@@ -17,6 +17,10 @@ export const RECIPE_FIELDS = gql`
       notes
     }
     instructions
+    story
+    gallery
+    layout
+    accent
     likeCount
     likedByMe
     favoritedByMe
@@ -74,7 +78,33 @@ export const GET_ME = gql`
       email
       avatar
       role
-      createdAt
+    }
+  }
+`;
+
+//Someone's public page: /u/:username. Null user means nobody has that name.
+//cache-and-network so a profile seen earlier still picks up new posts.
+export const GET_USER_PROFILE = gql`
+  ${RECIPE_CARD_FIELDS}
+  query GetUserProfile($username: String!) {
+    user(username: $username) {
+      _id
+      username
+      avatar
+      recipeCount
+      recipes {
+        ...RecipeCardFields
+      }
+    }
+  }
+`;
+
+//Live feedback while renaming. Always fetched from the network.
+export const CHECK_USERNAME = gql`
+  query CheckUsername($username: String!) {
+    checkUsername(username: $username) {
+      available
+      message
     }
   }
 `;

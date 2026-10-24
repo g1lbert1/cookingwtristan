@@ -1,15 +1,179 @@
 @import 'tailwindcss';
 
-/* Tailwind v4's preflight leaves buttons with the default arrow cursor.
-   Every clickable button on the site (like, favorite, post comment, log in,
-   log out, delete, tabs) should read as clickable; disabled ones keep the
-   arrow so a greyed-out button does not invite a click. */
+/* Palette: plum is the primary, black the ground, white the ink. Everything
+   else is a tint of one of the three. One face (Roboto) everywhere; headings
+   get their weight and tracking from .font-display, not a second family. */
+@theme {
+  --color-plum: #2b0042;
+  --font-sans: 'Roboto', 'Roboto Fallback', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: var(--font-sans);
+}
+
+/* Metric-matched stand-in for Roboto. If Google Fonts is slow, blocked or
+   offline, text renders in Arial sized to Roboto's metrics, so the swap (or
+   the lack of one) does not move the layout. */
+@font-face {
+  font-family: 'Roboto Fallback';
+  src: local('Arial');
+  ascent-override: 92.77%;
+  descent-override: 24.41%;
+  line-gap-override: 0%;
+  size-adjust: 100.3%;
+}
+
+/* Dark site: native controls (selects, scrollbars, date pickers) follow. */
+:root {
+  color-scheme: dark;
+}
+html {
+  background-color: #000;
+  scrollbar-color: #4a1c6a #000;
+}
+body {
+  background-color: #000;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Browser surfaces on the palette. */
+::selection {
+  background-color: #5a1f86;
+  color: #fff;
+}
+input,
+textarea,
+select {
+  caret-color: #fff;
+  accent-color: var(--color-plum);
+}
+
+/* One focus ring everywhere: white line with a plum halo, so it reads on the
+   black page and on white cards alike. Text fields swap it for a brighter
+   border (below) since a halo around a full-width input is heavy. */
+:is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgb(43 0 66 / 0.9);
+}
+
+/* Tailwind v4 preflight leaves buttons with the default arrow cursor. Every
+   clickable button on the site should read as clickable; disabled ones keep
+   the arrow so a greyed-out button does not invite a click. */
 button:not(:disabled) {
   cursor: pointer;
 }
 
+@layer components {
+  /* Headings and the wordmark: same family as body copy, set heavier and
+     tighter so the hierarchy comes from weight, not from a second face. */
+  .font-display {
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  /* Buttons. primary = white on dark, secondary = outlined on dark,
+     ink = outlined on a white card, danger = destructive confirm. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+      background-color 150ms,
+      border-color 150ms,
+      color 150ms,
+      opacity 150ms;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+  }
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+  }
+  .btn-primary {
+    background-color: #fff;
+    color: var(--color-plum);
+  }
+  .btn-primary:not(:disabled):hover {
+    background-color: rgb(255 255 255 / 0.86);
+  }
+  .btn-secondary {
+    border-color: rgb(255 255 255 / 0.3);
+    color: #fff;
+  }
+  .btn-secondary:not(:disabled):hover {
+    border-color: rgb(255 255 255 / 0.65);
+    background-color: rgb(255 255 255 / 0.1);
+  }
+  .btn-ink {
+    border-color: rgb(0 0 0 / 0.2);
+    color: #1a1a1a;
+  }
+  .btn-ink:not(:disabled):hover {
+    background-color: rgb(0 0 0 / 0.05);
+    border-color: rgb(0 0 0 / 0.4);
+  }
+  .btn-danger {
+    background-color: #dc2626;
+    color: #fff;
+  }
+  .btn-danger:not(:disabled):hover {
+    background-color: #b91c1c;
+  }
+
+  /* Surfaces. panel = plum feature block with the white rule (the home page
+     panel is the reference); card = white content block on the black page. */
+  .panel {
+    border-radius: 1.25rem;
+    border: 1px solid rgb(255 255 255 / 0.85);
+    background-color: var(--color-plum);
+  }
+  .card {
+    border-radius: 0.875rem;
+    border: 1px solid rgb(0 0 0 / 0.08);
+    background-color: #fff;
+    color: #0a0a0a;
+    box-shadow: 0 10px 30px -14px rgb(0 0 0 / 0.7);
+  }
+
+  /* Text fields on the dark page. */
+  .field {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    background-color: rgb(255 255 255 / 0.06);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #fff;
+  }
+  .field::placeholder {
+    color: rgb(255 255 255 / 0.4);
+  }
+  .field:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: rgb(255 255 255 / 0.75);
+  }
+
+  .alert-error {
+    border-radius: 0.75rem;
+    border: 1px solid rgb(248 113 113 / 0.4);
+    background-color: rgb(239 68 68 / 0.1);
+    padding: 1rem;
+    color: #fecaca;
+  }
+}
+
 /* Landing page photo wall. Each column holds two copies of its images, so
-   moving by 50% of the column's height lands exactly on the second copy. */
+   moving by 50% of the column height lands exactly on the second copy. */
 @keyframes gallery-up {
   from { transform: translateY(0); }
   to   { transform: translateY(-50%); }

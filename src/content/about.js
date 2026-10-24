@@ -12,14 +12,6 @@ export const about = {
   photo: null,
   location: "New Jersey",
 
-  //Short facts shown as chips under the name.
-  facts: [
-    "23 years old",
-    "Born in the Philippines",
-    "Loves Chess",
-    "B.S. Computer Science, Stevens '26",
-  ],
-
   links: {
     email: "tristanmikie@gmail.com",
     github: "https://github.com/g1lbert1",
@@ -30,13 +22,13 @@ export const about = {
   },
 
   story: [
-    "Hi guys, welcome to the website. I am Tristan. Be sure to check out the game I'm working on which will be released soon. For now, eat some good food :)",
+    "Hi guys, my name is Tristan! I hope you guys enjoy the website. My passion for cooking goes hand in hand with my passion for health and fitness, since me learning how to cook was what allowed me to lose 55 pounds in this past year! I hope to build a community with you guys so that this can be a place where we can all have fun and share our delicious and interesting recipes!",
   ],
 
   whyThisSite: {
     heading: "Why a cooking site?",
     paragraphs: [
-      "This site is solves a problem for me: on my cooking instagram, I often run out of room in the caption section of a post when putting the recipes for food I make. But I want to share the process of how I make what I make, so this is how this site is born!",
+      "This site solves a problem for me: on my cooking instagram, I often run out of room in the caption section of a post when putting the recipes for food I make. But I want to share the process of how I make what I make, so this is how this site is born!",
     ],
     cta: { label: "Browse the recipes", to: "/recipes" },
   },
