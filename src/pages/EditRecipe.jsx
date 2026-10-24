@@ -30,16 +30,16 @@ export default function EditRecipe() {
     },
   });
 
-  if (loading || meLoading) return <p className="text-gray-600">Loading recipe...</p>;
+  if (loading || meLoading) return <p className="text-white/60">Loading recipe...</p>;
 
   if (error) {
     return (
       <div role="alert">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="font-display text-4xl leading-none tracking-tight text-white">
           {isNotFound(error) ? "Recipe not found" : "Couldn't load recipe"}
         </h1>
-        <p className="mt-2 text-gray-600">{getErrorMessage(error)}</p>
-        <Link to="/recipes" className="mt-4 inline-block text-sm font-medium text-gray-900 underline">
+        <p className="mt-3 text-white/70">{getErrorMessage(error)}</p>
+        <Link to="/recipes" className="mt-4 inline-block text-sm font-medium text-white underline underline-offset-4 hover:text-white/80">
           Back to all recipes
         </Link>
       </div>
@@ -53,9 +53,9 @@ export default function EditRecipe() {
   if (!canManage(recipe)) {
     return (
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Not your recipe</h1>
-        <p className="mt-2 text-gray-600">You can only edit recipes you posted.</p>
-        <Link to={`/recipes/${recipe.slug}`} className="mt-4 inline-block text-sm font-medium text-gray-900 underline">
+        <h1 className="font-display text-4xl leading-none tracking-tight text-white">Not your recipe</h1>
+        <p className="mt-3 text-white/70">You can only edit recipes you posted.</p>
+        <Link to={`/recipes/${recipe.slug}`} className="mt-4 inline-block text-sm font-medium text-white underline underline-offset-4 hover:text-white/80">
           View recipe
         </Link>
       </div>
@@ -74,9 +74,9 @@ export default function EditRecipe() {
   return (
     <>
       <Seo title="Edit recipe" noindex />
-      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-2xl font-bold text-gray-900">Edit recipe</h1>
-        <Link to={`/recipes/${recipe.slug}`} className="text-sm font-medium text-gray-700 underline">
+      <div className="mb-8 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="font-display text-4xl leading-none tracking-tight text-white sm:text-5xl">Edit recipe</h1>
+        <Link to={`/recipes/${recipe.slug}`} className="text-sm font-medium text-white/80 underline underline-offset-4 hover:text-white">
           View recipe
         </Link>
       </div>
@@ -91,9 +91,9 @@ export default function EditRecipe() {
         submittingLabel="Saving..."
       />
 
-      <section className="mt-12 max-w-2xl border-t border-gray-200 pt-6">
-        <h2 className="text-lg font-semibold text-gray-900">Delete this recipe</h2>
-        <p className="mb-3 mt-1 text-sm text-gray-600">This cannot be undone.</p>
+      <section className="mt-12 max-w-2xl border-t border-white/15 pt-6">
+        <h2 className="text-lg font-semibold text-white">Delete this recipe</h2>
+        <p className="mb-3 mt-1 text-sm text-white/65">This cannot be undone.</p>
         <DeleteRecipeButton recipe={recipe} onDeleted={() => navigate("/recipes")} />
       </section>
     </>

@@ -19,8 +19,7 @@ const MAX_BYTES = 10 * 1024 * 1024;
 //Mirrors the server's allowed_formats. No SVG, no GIF.
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "image/avif"];
 
-const buttonClass =
-  "rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50";
+const buttonClass = "btn btn-secondary btn-sm";
 
 const uploadToCloudinary = async (file, sig) => {
   const body = new FormData();
@@ -84,7 +83,7 @@ export default function ImageUpload({ value, onChange, disabled }) {
           <img
             src={imageSrc(value, { width: 480 })}
             alt="Recipe photo preview"
-            className="aspect-[4/3] w-full max-w-xs rounded-lg border border-gray-200 object-cover"
+            className="aspect-[4/3] w-full max-w-xs rounded-xl border border-white/15 object-cover"
           />
           <div className="flex flex-wrap gap-2">
             <button
@@ -108,7 +107,7 @@ export default function ImageUpload({ value, onChange, disabled }) {
       ) : (
         <button
           type="button"
-          className="flex aspect-[4/3] w-full max-w-xs items-center justify-center rounded-lg border border-dashed border-gray-300 text-sm text-gray-500 hover:border-gray-400 hover:text-gray-700 disabled:opacity-50"
+          className="flex aspect-[4/3] w-full max-w-xs items-center justify-center rounded-xl border border-dashed border-white/25 text-sm text-white/60 transition-colors hover:border-white/60 hover:text-white disabled:opacity-50"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
         >
@@ -126,7 +125,7 @@ export default function ImageUpload({ value, onChange, disabled }) {
       />
 
       {error && (
-        <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>
+        <p role="alert" className="mt-2 text-sm text-red-300">{error}</p>
       )}
     </div>
   );

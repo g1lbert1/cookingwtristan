@@ -37,54 +37,59 @@ const RecipeTabs = () => {
   const recipes = data?.me?.[active] ?? [];
 
   return (
-    <section className="mt-10" aria-labelledby="profile-recipes-heading">
+    <section className="mt-12" aria-labelledby="profile-recipes-heading">
       <h2 id="profile-recipes-heading" className="sr-only">Your recipes</h2>
-      <div role="tablist" aria-label="Your recipes" className="flex flex-wrap gap-2 border-b border-gray-200">
+      <div role="tablist" aria-label="Your recipes" className="flex flex-wrap gap-1 border-b border-white/15">
         {TABS.map((t) => {
           const selected = t.key === active;
           const count = data?.me?.[t.key]?.length;
           return (
             <button
               key={t.key}
+              id={`profile-tab-${t.key}`}
               role="tab"
               type="button"
               aria-selected={selected}
+              aria-controls="profile-tabpanel"
               onClick={() => setActive(t.key)}
-              className={`-mb-px border-b-2 px-3 py-2 text-sm font-medium transition ${
+              className={`-mb-px border-b-2 px-3 py-2.5 text-sm font-medium transition-colors ${
                 selected
-                  ? "border-gray-900 text-gray-900"
-                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  ? "border-white text-white"
+                  : "border-transparent text-white/55 hover:border-white/40 hover:text-white"
               }`}
             >
               {t.label}
-              {count != null && <span className="ml-1.5 tabular-nums text-gray-400">{count}</span>}
+              {count != null && (
+                <span className={`ml-1.5 tabular-nums ${selected ? "text-white/60" : "text-white/50"}`}>
+                  {count}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
-      <div role="tabpanel" className="mt-6">
-        {loading && !data && <p className="text-gray-600">Loading...</p>}
+      <div
+        id="profile-tabpanel"
+        role="tabpanel"
+        aria-labelledby={`profile-tab-${active}`}
+        aria-busy={loading && !data}
+        className="mt-6"
+      >
+        {loading && !data && <p className="text-white/60">Loading your recipes...</p>}
         {error && (
-          <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4">
-            <p className="font-medium text-red-700">Couldn't load your recipes.</p>
-            <p className="mt-1 text-sm text-red-600">{error.message}</p>
-            <button
-              type="button"
-              onClick={() => refetch()}
-              className="mt-3 rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
-            >
+          <div role="alert" className="alert-error">
+            <p className="font-medium">Couldn't load your recipes.</p>
+            <p className="mt-1 text-sm text-red-200/80">{error.message}</p>
+            <button type="button" onClick={() => refetch()} className="btn btn-secondary btn-sm mt-3">
               Try again
             </button>
           </div>
         )}
         {data && recipes.length === 0 && (
-          <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center">
-            <p className="text-gray-600">{tab.empty}</p>
-            <Link
-              to={tab.action.to}
-              className="mt-4 inline-block rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-            >
+          <div className="rounded-2xl border border-dashed border-white/25 p-8 text-center">
+            <p className="text-white/70">{tab.empty}</p>
+            <Link to={tab.action.to} className="btn btn-primary mt-4">
               {tab.action.label}
             </Link>
           </div>
@@ -95,35 +100,46 @@ const RecipeTabs = () => {
   );
 };
 
+//Shown while `me` is still on its way, so the page keeps its shape and the
+//recipe tabs below can start loading at the same time.
+const HeaderSkeleton = () => (
+  <div className="flex animate-pulse items-center gap-5" aria-hidden="true">
+    <div className="h-20 w-20 shrink-0 rounded-full bg-white/10" />
+    <div className="flex-1 space-y-3">
+      <div className="h-8 w-48 max-w-full rounded bg-white/10" />
+      <div className="h-4 w-64 max-w-full rounded bg-white/10" />
+    </div>
+  </div>
+);
+
 const Profile = () => {
   const { logout: auth0Logout } = useAuth0();
+  //Usually already in the cache: App warms this query as soon as the session
+  //is known. On a cold load (straight after login) the header shows a
+  //skeleton while it resolves, and the tabs' own query goes out alongside it
+  //instead of waiting for this one to finish.
   const { data, loading, error } = useQuery(GET_ME);
 
   const logout = () =>
     auth0Logout({ logoutParams: { returnTo: window.location.origin } });
 
   const logoutButton = (
-    <button
-      type="button"
-      onClick={logout}
-      className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-    >
+    <button type="button" onClick={logout} className="btn btn-secondary">
       Log out
     </button>
   );
 
-  if (loading) return <p className="text-gray-600">Loading your profile...</p>;
   if (error) {
     // Keep a way out. A stale session is the usual cause, and logging out
     // then back in clears it.
     return (
       <section className="max-w-xl">
-        <p role="alert" className="text-red-600">
-          Couldn't load your profile: {error.message}
-        </p>
-        <p className="mt-2 text-sm text-gray-600">
-          Try logging out and back in.
-        </p>
+        <Seo title="Profile" noindex />
+        <div role="alert" className="alert-error">
+          <p className="font-medium">Couldn't load your profile.</p>
+          <p className="mt-1 text-sm text-red-200/80">{error.message}</p>
+        </div>
+        <p className="mt-3 text-sm text-white/70">Try logging out and back in.</p>
         <div className="mt-4">{logoutButton}</div>
       </section>
     );
@@ -135,46 +151,44 @@ const Profile = () => {
   return (
     <>
       <Seo title="Profile" noindex />
-      <section className="max-w-xl">
-        <div className="flex items-center gap-4">
-          {me?.avatar ? (
-            <img
-              src={me.avatar}
-              alt=""
-              className="h-16 w-16 rounded-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-2xl font-semibold text-gray-600">
-              {me?.username?.[0]?.toUpperCase() ?? "?"}
+      <section className="panel p-6 sm:p-8" aria-busy={loading && !me}>
+        {!me ? (
+          <HeaderSkeleton />
+        ) : (
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-5">
+              {me.avatar ? (
+                <img
+                  src={me.avatar}
+                  alt=""
+                  className="h-20 w-20 rounded-full border border-white/40 object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/40 bg-black/30 font-display text-3xl text-white">
+                  {me.username?.[0]?.toUpperCase() ?? "?"}
+                </div>
+              )}
+              <div className="min-w-0">
+                <h1 className="font-display text-4xl leading-none tracking-tight text-white sm:text-5xl">
+                  {me.username}
+                </h1>
+                <p className="mt-2 truncate text-white/70">{me.email}</p>
+                <p className="mt-1 text-sm text-white/60">
+                  <span className="capitalize">{me.role}</span>
+                  {joined && <> · Joined {joined}</>}
+                </p>
+              </div>
             </div>
-          )}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{me?.username}</h1>
-            <p className="text-gray-600">{me?.email}</p>
+
+            <div className="flex flex-wrap gap-3 sm:shrink-0">
+              <Link to="/recipes/new" className="btn btn-primary">
+                Share a recipe
+              </Link>
+              {logoutButton}
+            </div>
           </div>
-        </div>
-
-        <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-          <dt className="font-medium text-gray-500">Role</dt>
-          <dd className="capitalize text-gray-900">{me?.role}</dd>
-          {joined && (
-            <>
-              <dt className="font-medium text-gray-500">Joined</dt>
-              <dd className="text-gray-900">{joined}</dd>
-            </>
-          )}
-        </dl>
-
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            to="/recipes/new"
-            className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            Share a recipe
-          </Link>
-          {logoutButton}
-        </div>
+        )}
       </section>
 
       <RecipeTabs />

@@ -26,8 +26,8 @@ const LegacyEditRedirect = () => {
   return <Navigate to={`/recipes/${slug}/edit`} replace />;
 };
 
-//Most pages sit in a centered column on the light background. The landing
-//and recipe pages opt out and paint their own full-bleed backgrounds.
+//Most pages sit in a centered column on the black page. The landing and
+//recipe pages opt out and paint their own full-bleed backgrounds.
 const Contained = () => (
   <div className="mx-auto w-full max-w-7xl p-6">
     <Outlet />
@@ -40,7 +40,7 @@ const App = () => {
   useMe();
 
   return(
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-black text-white">
       <NavBar />
       <main className="flex flex-1 flex-col">
         <Routes>

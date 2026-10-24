@@ -7,11 +7,12 @@ import { imageSrc } from "../cloudinary";
 import Seo from "../components/Seo";
 import { FavoriteButton, LikeButton } from "../components/ReactionButtons";
 import Comments from "../components/Comments";
+import { ArrowLeftIcon } from "../components/Icons";
 import { SITE_AUTHOR } from "../content/site";
 
-//Blog-style recipe page. Full-bleed navy background (#001357) with white
-//text; the rest of the site keeps its light layout. The photo is the
-//recipe's imageUrl, uploaded from the recipe form.
+//Blog-style recipe page on the black page: white text, the ingredients in a
+//plum panel. The photo is the recipe's imageUrl, uploaded from the recipe
+//form.
 
 const UNIT_LABELS = {
   GRAMS: "g",
@@ -63,7 +64,7 @@ const ClockIcon = () => (
 );
 
 const Shell = ({ children }) => (
-  <div className="flex-1 bg-[#001357] text-white">
+  <div className="flex-1 text-white">
     <div className="mx-auto max-w-5xl px-6 py-10 sm:py-14">{children}</div>
   </div>
 );
@@ -109,22 +110,25 @@ const Recipe = () => {
         {/* HEADER */}
         <header className="max-w-3xl">
           <nav className="mb-6 flex items-center justify-between text-sm">
-            <Link to="/recipes" className="text-white/70 hover:text-white">← All recipes</Link>
+            <Link to="/recipes" className="inline-flex items-center gap-1.5 text-white/70 transition-colors hover:text-white">
+              <ArrowLeftIcon />
+              All recipes
+            </Link>
             {canManage(recipe) && (
               <Link
                 to={`/recipes/${recipe.slug}/edit`}
-                className="rounded-md border border-white/30 px-3 py-1 font-medium hover:bg-white/10"
+                className="btn btn-secondary btn-sm"
               >
                 Edit
               </Link>
             )}
           </nav>
 
-          <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+          <h1 className="font-display text-5xl leading-none tracking-tight text-balance sm:text-6xl md:text-7xl">
             {recipe.title}
           </h1>
 
-          <p className="mt-3 text-white/70">
+          <p className="mt-4 text-white/70">
             by <span className="font-medium text-white">{recipe.author?.username ?? SITE_AUTHOR}</span>
           </p>
 
@@ -175,8 +179,8 @@ const Recipe = () => {
               taller than the viewport and a pinned panel's bottom would be
               unreachable until the instructions ran out. */}
           <aside>
-            <h2 className="text-xl font-semibold">Ingredients</h2>
-            <ul className="mt-4 divide-y divide-white/10 rounded-xl border border-white/10 bg-white/5">
+            <h2 className="font-display text-3xl">Ingredients</h2>
+            <ul className="panel mt-4 divide-y divide-white/15 overflow-hidden">
               {recipe.ingredients.map((ing, i) => {
                 const quantity = formatQuantity(ing);
                 return (
@@ -197,11 +201,11 @@ const Recipe = () => {
           </aside>
 
           <section>
-            <h2 className="text-xl font-semibold">Instructions</h2>
+            <h2 className="font-display text-3xl">Instructions</h2>
             <ol className="mt-4 space-y-6">
               {recipe.instructions.map((step, i) => (
                 <li key={i} className="flex gap-4">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-[#001357]">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-plum">
                     {i + 1}
                   </span>
                   <p className="pt-1 leading-relaxed text-white/90">{step}</p>

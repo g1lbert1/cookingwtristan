@@ -12,14 +12,14 @@ const formatPrepTime = (minutes) => {
   return m ? `${h} hr ${m} min` : `${h} hr`;
 };
 
-//One recipe in a grid, shared by the recipes page and the profile tabs. The
-//card body is the link; the like, favorite, edit and delete controls sit
-//below it so buttons are never nested inside the anchor. Edit and delete
-//show only to the poster and to admins.
+//One recipe in a grid, shared by the recipes page and the profile tabs: a
+//white card on the black page. The card body is the link; the like,
+//favorite, edit and delete controls sit below it so buttons are never nested
+//inside the anchor. Edit and delete show only to the poster and to admins.
 export const RecipeCard = ({ recipe }) => {
   const { canManage } = useMe();
   return (
-    <li className="flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <li className="card flex h-full flex-col overflow-hidden transition-[border-color,box-shadow] hover:border-plum/40 hover:shadow-[0_18px_40px_-16px_rgba(0,0,0,0.9)]">
       <Link to={`/recipes/${recipe.slug}`} className="group flex flex-1 flex-col">
         {recipe.imageUrl && (
           <img
@@ -30,9 +30,11 @@ export const RecipeCard = ({ recipe }) => {
           />
         )}
         <div className="flex flex-1 flex-col p-5 pb-3">
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:underline">{recipe.title}</h3>
-          <p className="mt-1 text-sm text-gray-500">by {recipe.author?.username ?? SITE_AUTHOR}</p>
-          <p className="mt-auto pt-3 text-sm text-gray-600">
+          <h3 className="font-display text-2xl leading-tight text-black decoration-plum/50 underline-offset-4 group-hover:underline">
+            {recipe.title}
+          </h3>
+          <p className="mt-1 text-sm text-black/60">by {recipe.author?.username ?? SITE_AUTHOR}</p>
+          <p className="mt-auto pt-3 text-sm text-black/70">
             {formatPrepTime(recipe.prepTime)} · {recipe.ingredients.length}{" "}
             {recipe.ingredients.length === 1 ? "ingredient" : "ingredients"}
             {recipe.commentCount > 0 && (
@@ -48,11 +50,11 @@ export const RecipeCard = ({ recipe }) => {
           <span className="ml-auto flex items-center gap-4">
             <Link
               to={`/recipes/${recipe.slug}/edit`}
-              className="text-sm font-medium text-gray-700 hover:underline"
+              className="text-sm font-medium text-black/70 hover:text-black hover:underline"
             >
               Edit
             </Link>
-            <DeleteRecipeButton recipe={recipe} />
+            <DeleteRecipeButton recipe={recipe} tone="light" />
           </span>
         )}
       </div>
@@ -61,7 +63,7 @@ export const RecipeCard = ({ recipe }) => {
 };
 
 export const RecipeGrid = ({ recipes }) => (
-  <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
     {recipes.map((recipe) => (
       <RecipeCard key={recipe._id} recipe={recipe} />
     ))}

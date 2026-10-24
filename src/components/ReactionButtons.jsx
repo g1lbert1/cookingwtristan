@@ -61,15 +61,18 @@ const useReaction = ({ recipe, active, onDoc, offDoc, resultField, listField, op
   return { toggle, loading, error };
 };
 
-//Light tone sits on white cards; dark tone on the navy recipe page.
+//Light tone sits on white cards; dark tone on the black recipe page. An
+//active reaction swaps the surface: plum on white, white on black.
 const toneClass = {
   light: {
-    base: "border-gray-300 text-gray-700 hover:bg-gray-100",
-    active: "border-gray-900 bg-gray-900 text-white hover:bg-gray-800",
+    base: "border-black/20 text-black/80 hover:bg-black/5 hover:border-black/40",
+    active: "border-plum bg-plum text-white hover:bg-plum/90",
+    error: "text-red-700",
   },
   dark: {
-    base: "border-white/30 text-white hover:bg-white/10",
-    active: "border-white bg-white text-[#001357] hover:bg-white/90",
+    base: "border-white/30 text-white hover:bg-white/10 hover:border-white/60",
+    active: "border-white bg-white text-plum hover:bg-white/90",
+    error: "text-red-300",
   },
 };
 
@@ -80,7 +83,7 @@ const ReactionButton = ({ active, loading, error, onClick, tone, icon, label, co
       onClick={onClick}
       disabled={loading}
       aria-pressed={active}
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-sm font-medium transition disabled:opacity-60 ${
+      className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-sm font-medium transition-colors disabled:opacity-60 ${
         active ? toneClass[tone].active : toneClass[tone].base
       }`}
     >
@@ -88,7 +91,7 @@ const ReactionButton = ({ active, loading, error, onClick, tone, icon, label, co
       <span>{label}</span>
       {count != null && <span className="tabular-nums">{count}</span>}
     </button>
-    {error && <span role="alert" className="mt-1 text-xs text-red-600">{error}</span>}
+    {error && <span role="alert" className={`mt-1 text-xs ${toneClass[tone].error}`}>{error}</span>}
   </span>
 );
 

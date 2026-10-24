@@ -12,11 +12,9 @@ import {
 //receives a ready-to-send RecipeInput and returns a success message, or
 //throws. The form owns the field state, submit state, and the status line.
 
-const inputClass =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none";
-const smallButtonClass =
-  "rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100";
-const labelClass = "mb-1 block text-sm font-medium text-gray-700";
+const inputClass = "field";
+const smallButtonClass = "btn btn-secondary btn-sm";
+const labelClass = "mb-1 block text-sm font-medium text-white/80";
 
 export default function RecipeForm({
   initialValues,
@@ -113,7 +111,7 @@ export default function RecipeForm({
       </div>
 
       <fieldset>
-        <legend className="mb-2 text-lg font-semibold text-gray-900">Ingredients</legend>
+        <legend className="mb-3 font-display text-2xl text-white">Ingredients</legend>
         <div className="space-y-3">
           {recipe.ingredients.map((ing, index) => (
             <div key={index} className="grid grid-cols-1 gap-2 sm:grid-cols-[2fr_1fr_1fr_2fr_auto]">
@@ -169,11 +167,11 @@ export default function RecipeForm({
       </fieldset>
 
       <fieldset>
-        <legend className="mb-2 text-lg font-semibold text-gray-900">Instructions</legend>
+        <legend className="mb-3 font-display text-2xl text-white">Instructions</legend>
         <ol className="space-y-3">
           {recipe.instructions.map((step, index) => (
             <li key={index} className="flex gap-2">
-              <span className="pt-2 text-sm font-medium text-gray-500">{index + 1}.</span>
+              <span className="w-5 pt-2 text-sm font-medium tabular-nums text-white/50">{index + 1}.</span>
               <textarea
                 className={inputClass}
                 rows={2}
@@ -201,14 +199,14 @@ export default function RecipeForm({
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+          className="btn btn-primary"
         >
           {submitting ? submittingLabel : submitLabel}
         </button>
         {status && (
           <p
             role={status.kind === "error" ? "alert" : "status"}
-            className={status.kind === "error" ? "text-sm text-red-600" : "text-sm text-green-700"}
+            className={status.kind === "error" ? "text-sm text-red-300" : "text-sm text-emerald-300"}
           >
             {status.message}
           </p>

@@ -2,80 +2,83 @@ import { Link } from "react-router-dom";
 import GalleryBackground from "../components/GalleryBackground";
 import Balatro from "../components/Balatro";
 import Seo from "../components/Seo";
+import { ArrowRightIcon } from "../components/Icons";
 
-//Landing page: scrolling photo wall behind three cards. This route sits
-//outside the shared centered container so the background runs full-bleed.
+//Landing page: a scrolling photo wall behind one plum panel that holds the
+//two doors into the site. This route sits outside the shared centered
+//container so the background runs full-bleed.
+//
+//Each door runs its own Balatro paint shader (see src/background.md): black
+//paint with a violet swirl, no cursor interaction, no intro spin. A gradient
+//scrim keeps the label legible over the brightest streaks. The shader only
+//draws while the panel is on screen and the tab is visible.
 
-//The panel runs the Balatro paint shader (black / electric blue / black);
-//the cards inside are near-black with a subtle border so they read as
-//separate blocks on top of it. The same shader fills the gaps in the gallery.
-const cardClass =
-  "flex flex-col justify-between rounded-2xl border border-white/10 bg-gray-950 p-6 text-white shadow-lg";
+const SWIRL = {
+  color1: "#000000",
+  color2: "#6a1fd6",
+  color3: "#000000",
+  swirl: 1,
+  pixelSize: 1,
+  lighting: 0.45,
+  speed: 0.7,
+  mouseInteraction: false,
+  clickSwirl: false,
+  intro: false,
+  maxDevicePixelRatio: 1.5,
+};
+
+const Door = ({ to, title, blurb, cta }) => (
+  <Link
+    to={to}
+    className="group relative isolate flex min-h-60 flex-col justify-end overflow-hidden rounded-2xl border border-white/70 p-6 text-white transition-colors hover:border-white sm:min-h-72 sm:p-8"
+  >
+    <div className="absolute inset-0 -z-20" aria-hidden="true">
+      <Balatro {...SWIRL} />
+    </div>
+    <div
+      className="absolute inset-0 -z-10 bg-linear-to-t from-black/85 via-black/30 to-transparent"
+      aria-hidden="true"
+    />
+    <h2 className="font-display text-5xl leading-none tracking-tight sm:text-6xl">{title}</h2>
+    <p className="mt-3 max-w-xs text-white/80">{blurb}</p>
+    <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold">
+      {cta}
+      <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+    </span>
+  </Link>
+);
 
 const Landing = () => (
-  <div className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
+  <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 sm:px-6 sm:py-16">
     <Seo image="/og-image.jpg" />
     <GalleryBackground />
 
-    <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
-      <div className="absolute inset-0" aria-hidden="true">
-        <Balatro
-          color1="#000000"
-          color2="#2700ea"
-          color3="#000000"
-          pixelFilter={1100}
-          mouseInteraction={false}
+    <section
+      className="panel relative z-10 w-full max-w-4xl p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] sm:p-10"
+      aria-labelledby="landing-heading"
+    >
+      <h1
+        id="landing-heading"
+        className="font-display text-center text-5xl leading-none tracking-tight text-balance text-white sm:text-6xl md:text-7xl"
+      >
+        Cooking with Tristan
+      </h1>
+
+      <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5">
+        <Door
+          to="/recipes"
+          title="Recipes"
+          blurb="Check out my cool and awesome recipes."
+          cta="Browse recipes"
+        />
+        <Door
+          to="/about"
+          title="About me"
+          blurb="Learn more about me."
+          cta="Read more"
         />
       </div>
-
-      <div className="relative p-8 sm:p-12">
-      <div className="mb-10 text-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-        <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          Cooking with Tristan
-        </h1>
-      </div>
-
-      <div className="grid gap-6 sm:grid-cols-3">
-        <Link
-          to="/recipes"
-          className={`${cardClass} transition hover:-translate-y-1 hover:bg-gray-900`}
-        >
-          <div>
-            <h2 className="text-2xl font-semibold">Recipes</h2>
-            <p className="mt-2 text-white/80">
-              Check out my cool and awesome recipes.
-            </p>
-          </div>
-          <span className="mt-6 text-sm font-medium">Browse recipes →</span>
-        </Link>
-
-        <Link
-          to="/about"
-          className={`${cardClass} transition hover:-translate-y-1 hover:bg-gray-900`}
-        >
-          <div>
-            <h2 className="text-2xl font-semibold">About me</h2>
-            <p className="mt-2 text-white/80">
-              Learn more about me.
-            </p>
-          </div>
-          <span className="mt-6 text-sm font-medium">Read more →</span>
-        </Link>
-
-        <div className={cardClass} aria-disabled="true">
-          <div>
-            <h2 className="text-2xl font-semibold">Coming soon</h2>
-            <p className="mt-2 text-white/80">
-              Something new is in the works.
-            </p>
-          </div>
-          <span className="mt-6 inline-block w-fit rounded-full bg-white/20 px-3 py-1 text-xs font-medium uppercase tracking-wide">
-            Under construction
-          </span>
-        </div>
-      </div>
-      </div>
-    </div>
+    </section>
   </div>
 );
 export default Landing;

@@ -6,7 +6,7 @@ import { GET_RECIPE_COMMENTS } from "../graphql/queries";
 import { ADD_COMMENT, DELETE_COMMENT } from "../graphql/mutations";
 import { getErrorMessage } from "../graphql/errors";
 
-//The thread under a recipe, on the recipe page's navy background. The list
+//The thread under a recipe, on the recipe page's black background. The list
 //is its own query so the recipe itself renders before the comments arrive.
 //Both mutations patch the cached Recipe directly (its comments list and
 //commentCount), so the count in the header and on the cards stays in step
@@ -89,7 +89,7 @@ const DeleteCommentButton = ({ comment, recipe }) => {
         type="button"
         onClick={confirm}
         disabled={loading}
-        className="rounded bg-red-500 px-2 py-0.5 font-medium text-white hover:bg-red-600 disabled:opacity-50"
+        className="btn btn-danger rounded px-2 py-0.5 text-xs"
       >
         {loading ? "Deleting..." : "Yes, delete"}
       </button>
@@ -141,7 +141,7 @@ const CommentForm = ({ recipe }) => {
         maxLength={MAX_BODY}
         rows={3}
         placeholder="Tried it? Tell everyone how it went."
-        className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none"
+        className="field rounded-xl px-4 py-3 text-base"
       />
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
         <span className={`text-xs ${remaining < 50 ? "text-amber-300" : "text-white/50"}`}>
@@ -150,7 +150,7 @@ const CommentForm = ({ recipe }) => {
         <button
           type="submit"
           disabled={loading || empty}
-          className="rounded-md bg-white px-4 py-1.5 text-sm font-medium text-[#001357] hover:bg-white/90 disabled:opacity-50"
+          className="btn btn-primary btn-sm"
         >
           {loading ? "Posting..." : "Post comment"}
         </button>
@@ -164,13 +164,13 @@ const LoginPrompt = () => {
   const { loginWithRedirect, isLoading } = useAuth0();
   const location = useLocation();
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-3 rounded-lg border border-dashed border-white/25 bg-white/5 px-4 py-3 text-sm text-white/80">
+    <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-white/25 bg-white/5 px-4 py-3 text-sm text-white/80">
       <span>Sign in to join the conversation.</span>
       <button
         type="button"
         disabled={isLoading}
         onClick={() => loginWithRedirect({ appState: { returnTo: `${location.pathname}#comments` } })}
-        className="rounded-md border border-white/30 px-3 py-1 font-medium text-white hover:bg-white/10 disabled:opacity-50"
+        className="btn btn-secondary btn-sm"
       >
         Log in
       </button>
@@ -187,8 +187,8 @@ export default function Comments({ recipe }) {
   const count = data?.getRecipeBySlug?.commentCount ?? recipe.commentCount;
 
   return (
-    <section id="comments" className="mt-16 max-w-3xl border-t border-white/10 pt-10" aria-labelledby="comments-heading">
-      <h2 id="comments-heading" className="text-xl font-semibold">
+    <section id="comments" className="mt-16 max-w-3xl border-t border-white/15 pt-10" aria-labelledby="comments-heading">
+      <h2 id="comments-heading" className="font-display text-3xl">
         {count} {count === 1 ? "comment" : "comments"}
       </h2>
 
