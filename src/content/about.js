@@ -13,14 +13,6 @@ export const about = {
   photo: "/tristan.jpg",
   location: "New Jersey",
 
-  //Short facts shown as chips under the name.
-  facts: [
-    "23 years old",
-    "Born in the Philippines",
-    "Loves Chess",
-    "B.S. Computer Science, Stevens '26",
-  ],
-
   links: {
     email: "tristanmikie@gmail.com",
     github: "https://github.com/g1lbert1",
@@ -35,7 +27,7 @@ export const about = {
   },
 
   story: [
-    "Hi guys, welcome to the website. I am Tristan. Be sure to check out the game I'm working on which will be released soon. For now, eat some good food :)",
+    "Hi guys, my name is Tristan! I hope you guys enjoy the website. My passion for cooking goes hand in hand with my passion for health and fitness, since me learning how to cook was what allowed me to lose 55 pounds in this past year! I hope to build a community with you guys so that this can be a place where we can all have fun and share our delicious and interesting recipes!",
   ],
 
   whyThisSite: {

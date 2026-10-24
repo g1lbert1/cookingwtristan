@@ -18,7 +18,7 @@ const columns = Array.from({ length: COLUMNS }, (_, c) =>
 );
 
 const GalleryBackground = () => (
-  <div className="absolute inset-0 overflow-hidden bg-plum" aria-hidden="true">
+  <div className="absolute inset-0 overflow-hidden bg-black" aria-hidden="true">
     <div className="flex h-full w-full gap-3 px-3">
       {columns.map((images, c) => (
         <div key={c} className="min-w-0 flex-1 overflow-hidden">
@@ -46,7 +46,7 @@ const GalleryBackground = () => (
       ))}
     </div>
     {/* A light plum wash so the wall sits behind the panel instead of competing with it. */}
-    <div className="absolute inset-0 bg-plum/40" />
+    <div className="absolute inset-0 bg-black/50" />
   </div>
 );
 export default GalleryBackground;

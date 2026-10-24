@@ -4,9 +4,11 @@ import Balatro from "../components/Balatro";
 import Seo from "../components/Seo";
 import { ArrowRightIcon } from "../components/Icons";
 
-//Landing page: a scrolling photo wall behind one plum panel that holds the
-//two doors into the site. This route sits outside the shared centered
-//container so the background runs full-bleed.
+//Landing page: a scrolling photo wall on the black page behind one plum
+//panel that holds the two doors into the site. The panel and the doors have
+//no rule around them: plum on black and black on plum separate them. This
+//route sits outside the shared centered container so the background runs
+//full-bleed.
 //
 //Each door runs its own Balatro paint shader (see src/background.md): black
 //paint with a violet swirl, no cursor interaction, no intro spin. A gradient
@@ -30,7 +32,7 @@ const SWIRL = {
 const Door = ({ to, title, blurb, cta }) => (
   <Link
     to={to}
-    className="group relative isolate flex min-h-60 flex-col justify-end overflow-hidden rounded-2xl border border-white/70 p-6 text-white transition-colors hover:border-white sm:min-h-72 sm:p-8"
+    className="group relative isolate flex min-h-60 flex-col justify-end overflow-hidden rounded-2xl p-6 text-white transition-[filter] hover:brightness-110 sm:min-h-72 sm:p-8"
   >
     <div className="absolute inset-0 -z-20" aria-hidden="true">
       <Balatro {...SWIRL} />
@@ -54,7 +56,7 @@ const Landing = () => (
     <GalleryBackground />
 
     <section
-      className="panel relative z-10 w-full max-w-4xl p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] sm:p-10"
+      className="panel relative z-10 w-full max-w-4xl border-0 p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] sm:p-10"
       aria-labelledby="landing-heading"
     >
       <h1
