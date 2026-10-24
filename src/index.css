@@ -1,11 +1,24 @@
 @import 'tailwindcss';
 
 /* Palette: plum is the primary, black the ground, white the ink. Everything
-   else is a tint of one of the three. The display face carries headings and
-   the wordmark; body copy stays on the system sans so nothing blocks paint. */
+   else is a tint of one of the three. One face (Roboto) everywhere; headings
+   get their weight and tracking from .font-display, not a second family. */
 @theme {
   --color-plum: #2b0042;
-  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'Roboto', 'Roboto Fallback', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: var(--font-sans);
+}
+
+/* Metric-matched stand-in for Roboto. If Google Fonts is slow, blocked or
+   offline, text renders in Arial sized to Roboto's metrics, so the swap (or
+   the lack of one) does not move the layout. */
+@font-face {
+  font-family: 'Roboto Fallback';
+  src: local('Arial');
+  ascent-override: 92.77%;
+  descent-override: 24.41%;
+  line-gap-override: 0%;
+  size-adjust: 100.3%;
 }
 
 /* Dark site: native controls (selects, scrollbars, date pickers) follow. */
@@ -51,6 +64,13 @@ button:not(:disabled) {
 }
 
 @layer components {
+  /* Headings and the wordmark: same family as body copy, set heavier and
+     tighter so the hierarchy comes from weight, not from a second face. */
+  .font-display {
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
   /* Buttons. primary = white on dark, secondary = outlined on dark,
      ink = outlined on a white card, danger = destructive confirm. */
   .btn {
