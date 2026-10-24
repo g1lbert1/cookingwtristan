@@ -33,7 +33,7 @@ export const about = {
   whyThisSite: {
     heading: "Why a cooking site?",
     paragraphs: [
-      "This site is solves a problem for me: on my cooking instagram, I often run out of room in the caption section of a post when putting the recipes for food I make. But I want to share the process of how I make what I make, so this is how this site is born!",
+      "This site solves a problem for me: on my cooking instagram, I often run out of room in the caption section of a post when putting the recipes for food I make. But I want to share the process of how I make what I make, so this is how this site is born!",
     ],
     cta: { label: "Browse the recipes", to: "/recipes" },
   },
