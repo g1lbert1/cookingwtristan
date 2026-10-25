@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useApolloClient } from "@apollo/client/react";
+import { GET_RECIPES } from "../graphql/queries";
 import GalleryBackground from "../components/GalleryBackground";
 import Balatro from "../components/Balatro";
 import Seo from "../components/Seo";
@@ -50,37 +53,54 @@ const Door = ({ to, title, blurb, cta }) => (
   </Link>
 );
 
-const Landing = () => (
-  <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 sm:px-6 sm:py-16">
-    <Seo image="/og-image.jpg" />
-    <GalleryBackground />
+//Asks for the recipe list as soon as the home page is up. The API host spins
+//down when idle and takes a while to wake; for a signed-in visitor the
+//profile request absorbs that while they look at this page, but an
+//anonymous visitor's first request used to be the recipes page itself.
+//Fetching here means the server wakes (and the list lands in the Apollo
+//cache) before they click through. Any failure is left for the recipes page
+//to report properly; this is only a warm-up.
+const useWarmRecipes = () => {
+  const client = useApolloClient();
+  useEffect(() => {
+    client.query({ query: GET_RECIPES }).catch(() => {});
+  }, [client]);
+};
 
-    <section
-      className="panel relative z-10 w-full max-w-4xl border-0 p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] sm:p-10"
-      aria-labelledby="landing-heading"
-    >
-      <h1
-        id="landing-heading"
-        className="font-display text-center text-5xl leading-none tracking-tight text-balance text-white sm:text-6xl md:text-7xl"
+const Landing = () => {
+  useWarmRecipes();
+  return (
+    <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 sm:px-6 sm:py-16">
+      <Seo image="/og-image.jpg" />
+      <GalleryBackground />
+
+      <section
+        className="panel relative z-10 w-full max-w-4xl border-0 p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] sm:p-10"
+        aria-labelledby="landing-heading"
       >
-        Cooking with Tristan
-      </h1>
+        <h1
+          id="landing-heading"
+          className="font-display text-center text-5xl leading-none tracking-tight text-balance text-white sm:text-6xl md:text-7xl"
+        >
+          Cooking with Tristan
+        </h1>
 
-      <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5">
-        <Door
-          to="/recipes"
-          title="Recipes"
-          blurb="Check out my cool and awesome recipes."
-          cta="Browse recipes"
-        />
-        <Door
-          to="/about"
-          title="About me"
-          blurb="Learn more about me."
-          cta="Read more"
-        />
-      </div>
-    </section>
-  </div>
-);
+        <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5">
+          <Door
+            to="/recipes"
+            title="Recipes"
+            blurb="Check out my cool and awesome recipes."
+            cta="Browse recipes"
+          />
+          <Door
+            to="/about"
+            title="About me"
+            blurb="Learn more about me."
+            cta="Read more"
+          />
+        </div>
+      </section>
+    </div>
+  );
+};
 export default Landing;
